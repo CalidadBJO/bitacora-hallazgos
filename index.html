@@ -1,0 +1,1125 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Bitácora de Hallazgos MC</title>
+
+<style>
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    font-family:Arial,Helvetica,sans-serif;
+    background:#f3f5f7;
+    color:#1f2937;
+}
+
+.container{
+    max-width:1100px;
+    margin:auto;
+    padding:20px;
+}
+
+header{
+    background:#0f2742;
+    color:white;
+    padding:22px;
+    border-radius:14px;
+    margin-bottom:20px;
+}
+
+header h1{
+    margin:0 0 6px 0;
+    font-size:25px;
+}
+
+header p{
+    margin:0;
+    opacity:.8;
+}
+
+.card{
+    background:white;
+    border-radius:14px;
+    padding:20px;
+    margin-bottom:20px;
+    box-shadow:0 2px 8px rgba(0,0,0,.06);
+}
+
+.card h2{
+    margin-top:0;
+    color:#0f2742;
+}
+
+.form-grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:15px;
+}
+
+.field{
+    display:flex;
+    flex-direction:column;
+}
+
+.field label{
+    font-weight:bold;
+    font-size:13px;
+    margin-bottom:6px;
+}
+
+input,select{
+    width:100%;
+    padding:12px;
+    border:1px solid #ccd3da;
+    border-radius:8px;
+    font-size:16px;
+    background:white;
+}
+
+input:focus,select:focus{
+    outline:none;
+    border-color:#0f2742;
+}
+
+.full{
+    grid-column:1/-1;
+}
+
+button{
+    border:0;
+    border-radius:9px;
+    padding:13px 18px;
+    font-size:15px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.btn-primary{
+    background:#0f2742;
+    color:white;
+    width:100%;
+}
+
+.btn-primary:hover{
+    background:#193c61;
+}
+
+.message{
+    margin-top:10px;
+    font-weight:bold;
+    font-size:14px;
+}
+
+.success{
+    color:#16803c;
+}
+
+.error{
+    color:#b42318;
+}
+
+.stats{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:12px;
+}
+
+.stat{
+    background:white;
+    border-radius:12px;
+    padding:17px;
+    border-left:5px solid #0f2742;
+}
+
+.stat-title{
+    font-size:12px;
+    color:#667085;
+    margin-bottom:5px;
+}
+
+.stat-number{
+    font-size:28px;
+    font-weight:bold;
+}
+
+.filters{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:12px;
+}
+
+.table-wrapper{
+    overflow-x:auto;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    min-width:900px;
+}
+
+th{
+    background:#0f2742;
+    color:white;
+    padding:11px;
+    text-align:left;
+    font-size:12px;
+}
+
+td{
+    padding:10px;
+    border-bottom:1px solid #e5e7eb;
+    font-size:13px;
+}
+
+tr:hover{
+    background:#f8fafc;
+}
+
+.badge{
+    display:inline-block;
+    padding:5px 8px;
+    border-radius:20px;
+    background:#e8eef5;
+    color:#0f2742;
+    font-size:11px;
+    font-weight:bold;
+}
+
+.chart{
+    margin-top:15px;
+}
+
+.chart-row{
+    margin-bottom:14px;
+}
+
+.chart-label{
+    font-size:13px;
+    font-weight:bold;
+    margin-bottom:5px;
+    display:flex;
+    justify-content:space-between;
+}
+
+.bar-container{
+    height:25px;
+    background:#e5e7eb;
+    border-radius:6px;
+    overflow:hidden;
+}
+
+.bar{
+    height:100%;
+    background:#0f2742;
+    border-radius:6px;
+    transition:width .3s;
+}
+
+.empty{
+    color:#667085;
+    text-align:center;
+    padding:20px;
+}
+
+.small-note{
+    font-size:12px;
+    color:#667085;
+    margin-top:5px;
+}
+
+@media(max-width:700px){
+
+    .container{
+        padding:12px;
+    }
+
+    header{
+        padding:18px;
+    }
+
+    header h1{
+        font-size:21px;
+    }
+
+    .form-grid{
+        grid-template-columns:1fr;
+    }
+
+    .stats{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    .filters{
+        grid-template-columns:1fr;
+    }
+
+    .card{
+        padding:15px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<header>
+    <h1>Bitácora de Hallazgos de Materia Prima</h1>
+    <p>Master Coil · Registro y análisis de hallazgos</p>
+</header>
+
+<div class="stats">
+
+    <div class="stat">
+        <div class="stat-title">MC registradas</div>
+        <div class="stat-number" id="totalMC">0</div>
+    </div>
+
+    <div class="stat">
+        <div class="stat-title">Hallazgos</div>
+        <div class="stat-number" id="totalHallazgos">0</div>
+    </div>
+
+    <div class="stat">
+        <div class="stat-title">Molinos</div>
+        <div class="stat-number" id="totalMolinos">0</div>
+    </div>
+
+    <div class="stat">
+        <div class="stat-title">Supervisores</div>
+        <div class="stat-number" id="totalSupervisores">0</div>
+    </div>
+
+</div>
+
+<br>
+
+<div class="card">
+
+<h2>Registrar Master Coil</h2>
+
+<form id="registroForm">
+
+<div class="form-grid">
+
+<div class="field full">
+<label>PACKING · exactamente 15 dígitos *</label>
+
+<input
+    type="text"
+    id="packing"
+    inputmode="numeric"
+    maxlength="15"
+    placeholder="Ejemplo: 123456789012345"
+    required
+>
+
+<div class="small-note">
+Debe contener exactamente 15 números.
+</div>
+
+</div>
+
+
+<div class="field">
+
+<label>SPEC *</label>
+
+<input
+    type="text"
+    id="spec"
+    placeholder="Ej. SP270C"
+    required
+>
+
+</div>
+
+
+<div class="field">
+
+<label>ESPESOR *</label>
+
+<input
+    type="text"
+    id="espesor"
+    placeholder="Ej. 1.20"
+    required
+>
+
+</div>
+
+
+<div class="field">
+
+<label>ANCHO *</label>
+
+<input
+    type="text"
+    id="ancho"
+    placeholder="Ej. 1250"
+    required
+>
+
+</div>
+
+
+<div class="field">
+
+<label>MOLINO *</label>
+
+<input
+    type="text"
+    id="molino"
+    placeholder="Ej. Nippon Steel"
+    required
+>
+
+</div>
+
+
+<div class="field">
+
+<label>SUPERVISOR *</label>
+
+<input
+    type="text"
+    id="supervisor"
+    placeholder="Nombre del supervisor"
+    required
+>
+
+</div>
+
+
+<div class="field">
+
+<label>HALLAZGO *</label>
+
+<select id="hallazgo" required>
+
+<option value="">
+Seleccionar hallazgo...
+</option>
+
+<option>
+Spec incorrecta
+</option>
+
+<option>
+Falta de Spec
+</option>
+
+<option>
+Sin etiqueta de molino
+</option>
+
+<option>
+Error en Expected
+</option>
+
+<option>
+Error en Actual
+</option>
+
+<option>
+Material sin registro (Expected)
+</option>
+
+</select>
+
+</div>
+
+
+<div class="field full">
+
+<label>FECHA</label>
+
+<input
+    type="text"
+    id="fecha"
+    readonly
+>
+
+</div>
+
+
+<div class="full">
+
+<button
+    type="submit"
+    class="btn-primary"
+>
+REGISTRAR HALLAZGO
+</button>
+
+</div>
+
+</div>
+
+</form>
+
+<div id="message" class="message"></div>
+
+</div>
+
+
+<div class="card">
+
+<h2>Filtros</h2>
+
+<div class="filters">
+
+<div class="field">
+
+<label>Molino</label>
+
+<select id="filtroMolino">
+<option value="">Todos los molinos</option>
+</select>
+
+</div>
+
+
+<div class="field">
+
+<label>Hallazgo</label>
+
+<select id="filtroHallazgo">
+
+<option value="">
+Todos los hallazgos
+</option>
+
+<option>
+Spec incorrecta
+</option>
+
+<option>
+Falta de Spec
+</option>
+
+<option>
+Sin etiqueta de molino
+</option>
+
+<option>
+Error en Expected
+</option>
+
+<option>
+Error en Actual
+</option>
+
+<option>
+Material sin registro (Expected)
+</option>
+
+</select>
+
+</div>
+
+
+<div class="field">
+
+<label>Supervisor</label>
+
+<select id="filtroSupervisor">
+
+<option value="">
+Todos los supervisores
+</option>
+
+</select>
+
+</div>
+
+</div>
+
+</div>
+
+
+<div class="card">
+
+<h2>Hallazgos por Molino</h2>
+
+<div id="graficaMolino" class="chart"></div>
+
+</div>
+
+
+<div class="card">
+
+<h2>Hallazgos por Tipo</h2>
+
+<div id="graficaHallazgo" class="chart"></div>
+
+</div>
+
+
+<div class="card">
+
+<h2>Registros capturados</h2>
+
+<div class="table-wrapper">
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>Fecha</th>
+<th>PACKING</th>
+<th>SPEC</th>
+<th>ESPESOR</th>
+<th>ANCHO</th>
+<th>MOLINO</th>
+<th>SUPERVISOR</th>
+<th>HALLAZGO</th>
+
+</tr>
+
+</thead>
+
+<tbody id="tablaRegistros">
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+</div>
+
+
+<script>
+
+let registros = JSON.parse(
+    localStorage.getItem("bitacoraMC")
+) || [];
+
+
+const hallazgosDisponibles = [
+    "Spec incorrecta",
+    "Falta de Spec",
+    "Sin etiqueta de molino",
+    "Error en Expected",
+    "Error en Actual",
+    "Material sin registro (Expected)"
+];
+
+
+function actualizarFecha(){
+
+    const ahora = new Date();
+
+    const fecha = ahora.toLocaleString(
+        "es-MX",
+        {
+            day:"2-digit",
+            month:"2-digit",
+            year:"numeric",
+            hour:"2-digit",
+            minute:"2-digit"
+        }
+    );
+
+    document.getElementById("fecha").value = fecha;
+}
+
+
+function guardar(){
+
+    localStorage.setItem(
+        "bitacoraMC",
+        JSON.stringify(registros)
+    );
+
+}
+
+
+function escapar(texto){
+
+    return String(texto)
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+
+}
+
+
+function mostrarMensaje(texto,tipo){
+
+    const mensaje =
+        document.getElementById("message");
+
+    mensaje.textContent = texto;
+
+    mensaje.className =
+        "message " + tipo;
+
+    setTimeout(function(){
+
+        mensaje.textContent = "";
+
+    },4000);
+
+}
+
+
+document
+.getElementById("packing")
+.addEventListener("input",function(){
+
+    this.value =
+        this.value
+        .replace(/\D/g,"")
+        .slice(0,15);
+
+});
+
+
+document
+.getElementById("registroForm")
+.addEventListener("submit",function(event){
+
+    event.preventDefault();
+
+
+    const packing =
+        document.getElementById("packing")
+        .value.trim();
+
+
+    if(!/^\d{15}$/.test(packing)){
+
+        mostrarMensaje(
+            "El PACKING debe contener exactamente 15 dígitos.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    const duplicado =
+        registros.some(
+            r => r.packing === packing
+        );
+
+
+    if(duplicado){
+
+        mostrarMensaje(
+            "Ese PACKING ya se encuentra registrado.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    const registro = {
+
+        fecha:
+            document.getElementById("fecha").value,
+
+        packing:packing,
+
+        spec:
+            document.getElementById("spec")
+            .value.trim(),
+
+        espesor:
+            document.getElementById("espesor")
+            .value.trim(),
+
+        ancho:
+            document.getElementById("ancho")
+            .value.trim(),
+
+        molino:
+            document.getElementById("molino")
+            .value.trim(),
+
+        supervisor:
+            document.getElementById("supervisor")
+            .value.trim(),
+
+        hallazgo:
+            document.getElementById("hallazgo")
+            .value
+
+    };
+
+
+    registros.push(registro);
+
+    guardar();
+
+    this.reset();
+
+    actualizarFecha();
+
+    mostrarMensaje(
+        "✓ Hallazgo registrado correctamente.",
+        "success"
+    );
+
+    actualizarTodo();
+
+});
+
+
+function actualizarEstadisticas(datos){
+
+    document.getElementById("totalMC")
+        .textContent = datos.length;
+
+
+    document.getElementById("totalHallazgos")
+        .textContent = datos.length;
+
+
+    const molinos =
+        new Set(
+            datos.map(r => r.molino)
+        );
+
+    document.getElementById("totalMolinos")
+        .textContent = molinos.size;
+
+
+    const supervisores =
+        new Set(
+            datos.map(r => r.supervisor)
+        );
+
+    document.getElementById("totalSupervisores")
+        .textContent = supervisores.size;
+
+}
+
+
+function actualizarFiltros(){
+
+    const molinoSelect =
+        document.getElementById("filtroMolino");
+
+    const supervisorSelect =
+        document.getElementById("filtroSupervisor");
+
+
+    const molinoActual =
+        molinoSelect.value;
+
+    const supervisorActual =
+        supervisorSelect.value;
+
+
+    const molinos =
+        [...new Set(
+            registros.map(r => r.molino)
+        )].sort();
+
+
+    const supervisores =
+        [...new Set(
+            registros.map(r => r.supervisor)
+        )].sort();
+
+
+    molinoSelect.innerHTML =
+        '<option value="">Todos los molinos</option>';
+
+
+    molinos.forEach(function(molino){
+
+        const option =
+            document.createElement("option");
+
+        option.value = molino;
+
+        option.textContent = molino;
+
+        molinoSelect.appendChild(option);
+
+    });
+
+
+    supervisorSelect.innerHTML =
+        '<option value="">Todos los supervisores</option>';
+
+
+    supervisores.forEach(function(supervisor){
+
+        const option =
+            document.createElement("option");
+
+        option.value = supervisor;
+
+        option.textContent = supervisor;
+
+        supervisorSelect.appendChild(option);
+
+    });
+
+
+    molinoSelect.value = molinoActual;
+
+    supervisorSelect.value = supervisorActual;
+
+}
+
+
+function obtenerFiltrados(){
+
+    const molino =
+        document.getElementById("filtroMolino")
+        .value;
+
+
+    const hallazgo =
+        document.getElementById("filtroHallazgo")
+        .value;
+
+
+    const supervisor =
+        document.getElementById("filtroSupervisor")
+        .value;
+
+
+    return registros.filter(function(r){
+
+        return (
+
+            (!molino || r.molino === molino)
+
+            &&
+
+            (!hallazgo || r.hallazgo === hallazgo)
+
+            &&
+
+            (!supervisor || r.supervisor === supervisor)
+
+        );
+
+    });
+
+}
+
+
+function mostrarTabla(datos){
+
+    const tabla =
+        document.getElementById("tablaRegistros");
+
+
+    if(datos.length === 0){
+
+        tabla.innerHTML =
+            '<tr><td colspan="8" class="empty">No hay registros para los filtros seleccionados.</td></tr>';
+
+        return;
+
+    }
+
+
+    tabla.innerHTML =
+        datos
+        .slice()
+        .reverse()
+        .map(function(r){
+
+            return `
+
+            <tr>
+
+                <td>${escapar(r.fecha)}</td>
+
+                <td><strong>${escapar(r.packing)}</strong></td>
+
+                <td>${escapar(r.spec)}</td>
+
+                <td>${escapar(r.espesor)}</td>
+
+                <td>${escapar(r.ancho)}</td>
+
+                <td>${escapar(r.molino)}</td>
+
+                <td>${escapar(r.supervisor)}</td>
+
+                <td>
+                    <span class="badge">
+                        ${escapar(r.hallazgo)}
+                    </span>
+                </td>
+
+            </tr>
+
+            `;
+
+        })
+        .join("");
+
+}
+
+
+function crearGrafica(contenedorId,datos,titulo){
+
+    const contenedor =
+        document.getElementById(contenedorId);
+
+
+    if(datos.length === 0){
+
+        contenedor.innerHTML =
+            '<div class="empty">No hay información para mostrar.</div>';
+
+        return;
+
+    }
+
+
+    const conteo = {};
+
+
+    datos.forEach(function(r){
+
+        const categoria =
+            titulo === "molino"
+            ? r.molino
+            : r.hallazgo;
+
+
+        conteo[categoria] =
+            (conteo[categoria] || 0) + 1;
+
+    });
+
+
+    const ordenado =
+        Object.entries(conteo)
+        .sort((a,b) => b[1]-a[1]);
+
+
+    const maximo =
+        Math.max(...ordenado.map(x => x[1]));
+
+
+    contenedor.innerHTML =
+        ordenado
+        .map(function(item){
+
+            const nombre = item[0];
+
+            const cantidad = item[1];
+
+            const porcentaje =
+                (cantidad / maximo) * 100;
+
+
+            return `
+
+            <div class="chart-row">
+
+                <div class="chart-label">
+
+                    <span>${escapar(nombre)}</span>
+
+                    <span>${cantidad}</span>
+
+                </div>
+
+                <div class="bar-container">
+
+                    <div
+                        class="bar"
+                        style="width:${porcentaje}%"
+                    ></div>
+
+                </div>
+
+            </div>
+
+            `;
+
+        })
+        .join("");
+
+}
+
+
+function actualizarTodo(){
+
+    const datos =
+        obtenerFiltrados();
+
+
+    actualizarEstadisticas(datos);
+
+    actualizarFiltros();
+
+    mostrarTabla(datos);
+
+    crearGrafica(
+        "graficaMolino",
+        datos,
+        "molino"
+    );
+
+    crearGrafica(
+        "graficaHallazgo",
+        datos,
+        "hallazgo"
+    );
+
+}
+
+
+document
+.getElementById("filtroMolino")
+.addEventListener(
+    "change",
+    actualizarTodo
+);
+
+
+document
+.getElementById("filtroHallazgo")
+.addEventListener(
+    "change",
+    actualizarTodo
+);
+
+
+document
+.getElementById("filtroSupervisor")
+.addEventListener(
+    "change",
+    actualizarTodo
+);
+
+
+actualizarFecha();
+
+actualizarTodo();
+
+</script>
+
+</body>
+</html>
