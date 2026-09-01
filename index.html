@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Bitácora de Hallazgos MC</title>
+<title>Bitácora de Hallazgos de Materia Prima</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -22,7 +23,7 @@ body{
 }
 
 .container{
-    max-width:1250px;
+    max-width:1400px;
     margin:auto;
     padding:20px;
 }
@@ -36,8 +37,8 @@ header{
 }
 
 header h1{
-    margin:0 0 6px 0;
-    font-size:26px;
+    margin:0 0 6px;
+    font-size:27px;
 }
 
 header p{
@@ -58,7 +59,13 @@ header p{
     color:#ffb4b4;
 }
 
-.card{
+
+/* =========================
+   CARDS
+========================= */
+
+.card,
+.chart-card{
     background:white;
     border-radius:14px;
     padding:20px;
@@ -66,11 +73,54 @@ header p{
     box-shadow:0 2px 8px rgba(0,0,0,.06);
 }
 
-.card h2{
+.card h2,
+.chart-card h3{
     margin-top:0;
     color:#0f2742;
-    font-size:20px;
 }
+
+
+/* =========================
+   INDICADORES
+========================= */
+
+.stats{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:15px;
+    margin-bottom:20px;
+}
+
+.stat{
+    background:white;
+    border-radius:12px;
+    padding:18px;
+    border-left:5px solid #0f2742;
+    box-shadow:0 2px 8px rgba(0,0,0,.06);
+}
+
+.stat-title{
+    font-size:13px;
+    color:#667085;
+    margin-bottom:7px;
+}
+
+.stat-number{
+    font-size:28px;
+    font-weight:bold;
+    color:#0f2742;
+}
+
+.stat-detail{
+    margin-top:5px;
+    font-size:13px;
+    color:#667085;
+}
+
+
+/* =========================
+   FORMULARIO
+========================= */
 
 .form-grid{
     display:grid;
@@ -109,13 +159,24 @@ select:focus{
     grid-column:1/-1;
 }
 
+.small-note{
+    font-size:12px;
+    color:#667085;
+    margin-top:5px;
+}
+
 button{
     border:0;
     border-radius:9px;
-    padding:13px 18px;
-    font-size:15px;
+    padding:12px 17px;
+    font-size:14px;
     font-weight:bold;
     cursor:pointer;
+}
+
+button:disabled{
+    opacity:.6;
+    cursor:not-allowed;
 }
 
 .btn-primary{
@@ -133,6 +194,22 @@ button{
     color:#0f2742;
 }
 
+.btn-danger{
+    background:#b42318;
+    color:white;
+    padding:8px 11px;
+    font-size:12px;
+}
+
+.btn-danger:hover{
+    background:#8f1c13;
+}
+
+
+/* =========================
+   MENSAJES
+========================= */
+
 .message{
     margin-top:12px;
     font-weight:bold;
@@ -147,41 +224,27 @@ button{
     color:#b42318;
 }
 
-.small-note{
-    font-size:12px;
-    color:#667085;
-    margin-top:5px;
-}
 
-.stats{
-    display:grid;
-    grid-template-columns:repeat(5,1fr);
-    gap:12px;
-}
-
-.stat{
-    background:white;
-    border-radius:12px;
-    padding:17px;
-    border-left:5px solid #0f2742;
-}
-
-.stat-title{
-    font-size:12px;
-    color:#667085;
-    margin-bottom:5px;
-}
-
-.stat-number{
-    font-size:28px;
-    font-weight:bold;
-}
+/* =========================
+   FILTROS
+========================= */
 
 .filters{
     display:grid;
-    grid-template-columns:repeat(5,1fr);
+    grid-template-columns:repeat(4,1fr);
     gap:12px;
 }
+
+.actions{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+}
+
+
+/* =========================
+   GRAFICAS
+========================= */
 
 .dashboard-grid{
     display:grid;
@@ -189,21 +252,8 @@ button{
     gap:20px;
 }
 
-.chart-card{
-    background:white;
-    border-radius:14px;
-    padding:20px;
-    box-shadow:0 2px 8px rgba(0,0,0,.06);
-    min-width:0;
-}
-
-.chart-card h3{
-    margin-top:0;
-    color:#0f2742;
-}
-
 .chart-area{
-    min-height:260px;
+    min-height:270px;
 }
 
 .chart-row{
@@ -231,6 +281,27 @@ button{
     background:#0f2742;
     border-radius:6px;
 }
+
+.bar-liberado{
+    background:#3c7a57;
+}
+
+.bar-bloqueado{
+    background:#b42318;
+}
+
+.bar-propio{
+    background:#506d89;
+}
+
+.bar-molino{
+    background:#7f9db8;
+}
+
+
+/* =========================
+   PARETO
+========================= */
 
 .pareto-item{
     margin-bottom:14px;
@@ -262,11 +333,16 @@ button{
     margin-top:3px;
 }
 
+
+/* =========================
+   PIE
+========================= */
+
 .pie-container{
     display:flex;
     align-items:center;
     justify-content:center;
-    gap:25px;
+    gap:30px;
     flex-wrap:wrap;
 }
 
@@ -280,7 +356,7 @@ button{
 .legend{
     display:flex;
     flex-direction:column;
-    gap:8px;
+    gap:9px;
     font-size:12px;
 }
 
@@ -291,14 +367,19 @@ button{
 }
 
 .legend-color{
-    width:12px;
-    height:12px;
+    width:13px;
+    height:13px;
     border-radius:3px;
 }
 
+
+/* =========================
+   LINEA
+========================= */
+
 .line-chart{
     width:100%;
-    height:260px;
+    height:270px;
 }
 
 .line-chart svg{
@@ -306,11 +387,10 @@ button{
     height:100%;
 }
 
-.empty{
-    color:#667085;
-    text-align:center;
-    padding:35px 10px;
-}
+
+/* =========================
+   TABLA
+========================= */
 
 .table-wrapper{
     overflow-x:auto;
@@ -319,7 +399,7 @@ button{
 table{
     width:100%;
     border-collapse:collapse;
-    min-width:1000px;
+    min-width:1150px;
 }
 
 th{
@@ -342,25 +422,98 @@ tr:hover{
 
 .badge{
     display:inline-block;
-    padding:5px 8px;
+    padding:5px 9px;
     border-radius:20px;
-    background:#e8eef5;
-    color:#0f2742;
     font-size:11px;
     font-weight:bold;
 }
 
-.actions{
-    display:flex;
-    gap:10px;
-    flex-wrap:wrap;
-    margin-bottom:15px;
+.badge-liberado{
+    background:#e5f4ea;
+    color:#16803c;
 }
 
-@media(max-width:1000px){
+.badge-bloqueado{
+    background:#fde8e7;
+    color:#b42318;
+}
+
+.badge-molino{
+    background:#e8eef5;
+    color:#0f2742;
+}
+
+.badge-propio{
+    background:#eef2f6;
+    color:#506d89;
+}
+
+.empty{
+    color:#667085;
+    text-align:center;
+    padding:35px 10px;
+}
+
+
+/* =========================
+   MODAL
+========================= */
+
+.modal{
+    display:none;
+    position:fixed;
+    z-index:1000;
+    left:0;
+    top:0;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,.55);
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+}
+
+.modal-box{
+    background:white;
+    width:100%;
+    max-width:430px;
+    border-radius:14px;
+    padding:25px;
+    box-shadow:0 10px 35px rgba(0,0,0,.25);
+}
+
+.modal-box h3{
+    margin-top:0;
+    color:#0f2742;
+}
+
+.modal-actions{
+    display:flex;
+    gap:10px;
+    margin-top:18px;
+}
+
+.modal-actions button{
+    flex:1;
+}
+
+.delete-warning{
+    background:#fff4f2;
+    border-left:4px solid #b42318;
+    padding:12px;
+    margin:15px 0;
+    font-size:13px;
+}
+
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media(max-width:1050px){
 
     .stats{
-        grid-template-columns:repeat(3,1fr);
+        grid-template-columns:repeat(2,1fr);
     }
 
     .filters{
@@ -370,6 +523,7 @@ tr:hover{
     .dashboard-grid{
         grid-template-columns:1fr;
     }
+
 }
 
 @media(max-width:650px){
@@ -391,7 +545,7 @@ tr:hover{
     }
 
     .stats{
-        grid-template-columns:repeat(2,1fr);
+        grid-template-columns:1fr 1fr;
     }
 
     .filters{
@@ -406,14 +560,22 @@ tr:hover{
     .stat-number{
         font-size:23px;
     }
+
 }
 
 </style>
+
 </head>
+
 
 <body>
 
 <div class="container">
+
+
+<!-- =====================================================
+     ENCABEZADO
+===================================================== -->
 
 <header>
 
@@ -435,20 +597,21 @@ Conectando con la base de datos...
 </header>
 
 
-<!-- ============================= -->
-<!-- ESTADISTICAS -->
-<!-- ============================= -->
+<!-- =====================================================
+     INDICADORES
+===================================================== -->
 
 <div class="stats">
 
+
 <div class="stat">
 
 <div class="stat-title">
-MC registradas
+Total de hallazgos
 </div>
 
 <div
-id="totalMC"
+id="totalHallazgos"
 class="stat-number"
 >
 0
@@ -460,27 +623,11 @@ class="stat-number"
 <div class="stat">
 
 <div class="stat-title">
-MC con hallazgo
+% de bloqueados
 </div>
 
 <div
-id="mcConHallazgo"
-class="stat-number"
->
-0
-</div>
-
-</div>
-
-
-<div class="stat">
-
-<div class="stat-title">
-% con hallazgo
-</div>
-
-<div
-id="porcentajeHallazgo"
+id="porcentajeBloqueados"
 class="stat-number"
 >
 0%
@@ -492,14 +639,21 @@ class="stat-number"
 <div class="stat">
 
 <div class="stat-title">
-Molinos
+Responsabilidad propia
 </div>
 
 <div
-id="totalMolinos"
+id="cantidadPropio"
 class="stat-number"
 >
 0
+</div>
+
+<div
+id="porcentajePropio"
+class="stat-detail"
+>
+0%
 </div>
 
 </div>
@@ -508,35 +662,42 @@ class="stat-number"
 <div class="stat">
 
 <div class="stat-title">
-Supervisores
+Responsabilidad Molino
 </div>
 
 <div
-id="totalSupervisores"
+id="cantidadMolino"
 class="stat-number"
 >
 0
 </div>
 
+<div
+id="porcentajeMolino"
+class="stat-detail"
+>
+0%
 </div>
 
 </div>
 
 
-<br>
+</div>
 
 
-<!-- ============================= -->
-<!-- REGISTRO -->
-<!-- ============================= -->
+<!-- =====================================================
+     REGISTRO
+===================================================== -->
 
 <div class="card">
 
 <h2>
-Registrar Master Coil
+Registrar Hallazgo
 </h2>
 
+
 <form id="registroForm">
+
 
 <div class="form-grid">
 
@@ -658,28 +819,84 @@ required
 Seleccionar hallazgo...
 </option>
 
-<option>
+<option value="Spec incorrecta">
 Spec incorrecta
 </option>
 
-<option>
+<option value="Falta de Spec">
 Falta de Spec
 </option>
 
-<option>
+<option value="Sin etiqueta de molino">
 Sin etiqueta de molino
 </option>
 
-<option>
+<option value="Error en Expected">
 Error en Expected
 </option>
 
-<option>
+<option value="Error en Actual">
 Error en Actual
 </option>
 
-<option>
+<option value="Material sin registro (Expected)">
 Material sin registro (Expected)
+</option>
+
+</select>
+
+</div>
+
+
+<div class="field">
+
+<label>
+STATUS *
+</label>
+
+<select
+id="status"
+required
+>
+
+<option value="">
+Seleccionar status...
+</option>
+
+<option value="Liberado">
+Liberado
+</option>
+
+<option value="Bloqueado">
+Bloqueado
+</option>
+
+</select>
+
+</div>
+
+
+<div class="field">
+
+<label>
+RESPONSABILIDAD *
+</label>
+
+<select
+id="responsabilidad"
+required
+>
+
+<option value="">
+Seleccionar responsabilidad...
+</option>
+
+<option value="Molino">
+Molino
+</option>
+
+<option value="Propio">
+Propio
 </option>
 
 </select>
@@ -695,9 +912,8 @@ FECHA
 
 <input
 type="text"
-id="fecha"
-readonly
 value="Se generará automáticamente"
+readonly
 >
 
 </div>
@@ -715,9 +931,11 @@ REGISTRAR HALLAZGO
 
 </div>
 
+
 </div>
 
 </form>
+
 
 <div
 id="message"
@@ -727,15 +945,16 @@ class="message"
 </div>
 
 
-<!-- ============================= -->
-<!-- FILTROS -->
-<!-- ============================= -->
+<!-- =====================================================
+     FILTROS
+===================================================== -->
 
 <div class="card">
 
 <h2>
 Filtros del Dashboard
 </h2>
+
 
 <div class="filters">
 
@@ -820,27 +1039,27 @@ id="filtroHallazgo"
 Todos los hallazgos
 </option>
 
-<option>
+<option value="Spec incorrecta">
 Spec incorrecta
 </option>
 
-<option>
+<option value="Falta de Spec">
 Falta de Spec
 </option>
 
-<option>
+<option value="Sin etiqueta de molino">
 Sin etiqueta de molino
 </option>
 
-<option>
+<option value="Error en Expected">
 Error en Expected
 </option>
 
-<option>
+<option value="Error en Actual">
 Error en Actual
 </option>
 
-<option>
+<option value="Material sin registro (Expected)">
 Material sin registro (Expected)
 </option>
 
@@ -848,9 +1067,66 @@ Material sin registro (Expected)
 
 </div>
 
+
+<div class="field">
+
+<label>
+Status
+</label>
+
+<select
+id="filtroStatus"
+>
+
+<option value="">
+Todos
+</option>
+
+<option value="Liberado">
+Liberado
+</option>
+
+<option value="Bloqueado">
+Bloqueado
+</option>
+
+</select>
+
 </div>
 
+
+<div class="field">
+
+<label>
+Responsabilidad
+</label>
+
+<select
+id="filtroResponsabilidad"
+>
+
+<option value="">
+Todas
+</option>
+
+<option value="Molino">
+Molino
+</option>
+
+<option value="Propio">
+Propio
+</option>
+
+</select>
+
+</div>
+
+
+</div>
+
+
 <br>
+
 
 <div class="actions">
 
@@ -861,6 +1137,7 @@ id="limpiarFiltros"
 >
 LIMPIAR FILTROS
 </button>
+
 
 <button
 type="button"
@@ -875,14 +1152,12 @@ ACTUALIZAR DATOS
 </div>
 
 
-<!-- ============================= -->
-<!-- DASHBOARD -->
-<!-- ============================= -->
+<!-- =====================================================
+     DASHBOARD
+===================================================== -->
 
 <div class="dashboard-grid">
 
-
-<!-- MOLINO -->
 
 <div class="chart-card">
 
@@ -898,24 +1173,6 @@ class="chart-area"
 </div>
 
 
-<!-- HALLAZGO -->
-
-<div class="chart-card">
-
-<h3>
-Distribución por Tipo de Hallazgo
-</h3>
-
-<div
-id="graficaPie"
-class="chart-area"
-></div>
-
-</div>
-
-
-<!-- PARETO -->
-
 <div class="chart-card">
 
 <h3>
@@ -930,7 +1187,19 @@ class="chart-area"
 </div>
 
 
-<!-- TENDENCIA -->
+<div class="chart-card">
+
+<h3>
+Distribución por Hallazgo
+</h3>
+
+<div
+id="graficaPie"
+class="chart-area"
+></div>
+
+</div>
+
 
 <div class="chart-card">
 
@@ -946,55 +1215,74 @@ class="line-chart"
 </div>
 
 
-<!-- SUPERVISOR -->
-
 <div class="chart-card">
 
 <h3>
-Hallazgos por Supervisor
+Liberados vs Bloqueados
 </h3>
 
 <div
-id="graficaSupervisor"
+id="graficaStatus"
 class="chart-area"
 ></div>
 
 </div>
 
 
-<!-- RESUMEN -->
+<div class="chart-card">
+
+<h3>
+Responsabilidad · Molino vs Propio
+</h3>
+
+<div
+id="graficaResponsabilidad"
+class="chart-area"
+></div>
+
+</div>
+
 
 <div class="chart-card">
 
 <h3>
-Resumen de filtros
+Hallazgos por SPEC
 </h3>
 
-<div id="resumenFiltros">
-
-<div class="empty">
-Selecciona filtros para analizar la información.
-</div>
-
-</div>
-
-</div>
+<div
+id="graficaSpec"
+class="chart-area"
+></div>
 
 </div>
 
 
-<br>
+<div class="chart-card">
+
+<h3>
+Resumen actual
+</h3>
+
+<div
+id="resumen"
+></div>
+
+</div>
 
 
-<!-- ============================= -->
-<!-- TABLA -->
-<!-- ============================= -->
+</div>
+
+
+<!-- =====================================================
+     TABLA
+===================================================== -->
 
 <div class="card">
 
 <h2>
 Registros capturados
 </h2>
+
 
 <div class="table-wrapper">
 
@@ -1036,17 +1324,172 @@ SUPERVISOR
 HALLAZGO
 </th>
 
+<th>
+STATUS
+</th>
+
+<th>
+RESPONSABILIDAD
+</th>
+
+<th>
+ACCIÓN
+</th>
+
 </tr>
 
 </thead>
 
+
 <tbody
 id="tablaRegistros"
->
+></tbody>
 
-</tbody>
 
 </table>
+
+</div>
+
+</div>
+
+
+</div>
+
+
+<!-- =====================================================
+     MODAL LOGIN
+===================================================== -->
+
+<div
+id="loginModal"
+class="modal"
+>
+
+<div class="modal-box">
+
+<h3>
+🔐 Acceso de administrador
+</h3>
+
+<p>
+Para eliminar registros necesitas iniciar sesión.
+</p>
+
+
+<div class="field">
+
+<label>
+Correo
+</label>
+
+<input
+type="email"
+id="adminEmail"
+placeholder="Correo del administrador"
+>
+
+</div>
+
+
+<br>
+
+
+<div class="field">
+
+<label>
+Contraseña
+</label>
+
+<input
+type="password"
+id="adminPassword"
+placeholder="Contraseña"
+>
+
+</div>
+
+
+<div
+id="loginMessage"
+class="message"
+></div>
+
+
+<div class="modal-actions">
+
+<button
+type="button"
+class="btn-secondary"
+id="cancelLogin"
+>
+CANCELAR
+</button>
+
+
+<button
+type="button"
+class="btn-primary"
+id="loginButton"
+>
+ENTRAR
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- =====================================================
+     MODAL CONFIRMAR ELIMINACION
+===================================================== -->
+
+<div
+id="deleteModal"
+class="modal"
+>
+
+<div class="modal-box">
+
+<h3>
+⚠️ Eliminar registro
+</h3>
+
+<div class="delete-warning">
+
+Esta acción eliminará permanentemente el hallazgo de la base de datos.
+
+</div>
+
+
+<div id="deleteInfo"></div>
+
+
+<div
+id="deleteMessage"
+class="message"
+></div>
+
+
+<div class="modal-actions">
+
+<button
+type="button"
+class="btn-secondary"
+id="cancelDelete"
+>
+CANCELAR
+</button>
+
+
+<button
+type="button"
+class="btn-danger"
+id="confirmDelete"
+>
+ELIMINAR
+</button>
 
 </div>
 
@@ -1058,7 +1501,7 @@ id="tablaRegistros"
 <script>
 
 /* =====================================================
-   CONFIGURACION SUPABASE
+   SUPABASE
 ===================================================== */
 
 const SUPABASE_URL =
@@ -1081,48 +1524,13 @@ supabase.createClient(
 
 let registros = [];
 
+let registroAEliminar = null;
+
 let canalRealtime = null;
 
 
 /* =====================================================
-   HALLAZGOS
-===================================================== */
-
-const hallazgosDisponibles = [
-
-    "Spec incorrecta",
-
-    "Falta de Spec",
-
-    "Sin etiqueta de molino",
-
-    "Error en Expected",
-
-    "Error en Actual",
-
-    "Material sin registro (Expected)"
-
-];
-
-
-/* =====================================================
-   ESCAPAR TEXTO
-===================================================== */
-
-function escapar(texto){
-
-    return String(texto ?? "")
-        .replaceAll("&","&amp;")
-        .replaceAll("<","&lt;")
-        .replaceAll(">","&gt;")
-        .replaceAll('"',"&quot;")
-        .replaceAll("'","&#039;");
-
-}
-
-
-/* =====================================================
-   MENSAJE
+   MENSAJES
 ===================================================== */
 
 function mostrarMensaje(
@@ -1130,21 +1538,45 @@ function mostrarMensaje(
     tipo
 ){
 
-    const mensaje =
-        document.getElementById("message");
+    const elemento =
+        document.getElementById(
+            "message"
+        );
 
-    mensaje.textContent =
+    elemento.textContent =
         texto;
 
-    mensaje.className =
+    elemento.className =
         "message " + tipo;
 
-    setTimeout(function(){
+    setTimeout(
+        function(){
 
-        mensaje.textContent =
-            "";
+            elemento.textContent = "";
 
-    },5000);
+        },
+        5000
+    );
+
+}
+
+
+/* =====================================================
+   ESCAPAR TEXTO
+===================================================== */
+
+function escapar(
+    texto
+){
+
+    return String(
+        texto ?? ""
+    )
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
 
 }
 
@@ -1160,18 +1592,13 @@ async function cargarDatos(){
             "connectionStatus"
         );
 
+
     status.textContent =
         "Consultando datos...";
 
-    status.className =
-        "status";
 
-
-    const {
-        data,
-        error
-    } =
-    await supabaseClient
+    const resultado =
+        await supabaseClient
 
         .from("hallazgos_mc")
 
@@ -1185,9 +1612,13 @@ async function cargarDatos(){
         );
 
 
-    if(error){
+    if(
+        resultado.error
+    ){
 
-        console.error(error);
+        console.error(
+            resultado.error
+        );
 
         status.textContent =
             "Error de conexión con Supabase.";
@@ -1201,7 +1632,7 @@ async function cargarDatos(){
 
 
     registros =
-        data || [];
+        resultado.data || [];
 
 
     status.textContent =
@@ -1219,11 +1650,13 @@ async function cargarDatos(){
 
 
 /* =====================================================
-   REGISTRO
+   REGISTRAR
 ===================================================== */
 
 document
-.getElementById("registroForm")
+.getElementById(
+    "registroForm"
+)
 .addEventListener(
     "submit",
     async function(event){
@@ -1231,21 +1664,18 @@ document
         event.preventDefault();
 
 
-        const boton =
-            document.getElementById(
-                "btnRegistrar"
-            );
-
-
         const packing =
-            document.getElementById(
-                "packing"
-            )
+            document
+            .getElementById("packing")
             .value
             .trim();
 
 
-        if(!/^\d{15}$/.test(packing)){
+        if(
+            !/^\d{15}$/.test(
+                packing
+            )
+        ){
 
             mostrarMensaje(
                 "El PACKING debe contener exactamente 15 dígitos.",
@@ -1294,45 +1724,62 @@ document
             hallazgo:
                 document
                 .getElementById("hallazgo")
+                .value,
+
+            status:
+                document
+                .getElementById("status")
+                .value,
+
+            responsabilidad:
+                document
+                .getElementById("responsabilidad")
                 .value
 
         };
 
 
-        boton.disabled =
-            true;
+        const boton =
+            document.getElementById(
+                "btnRegistrar"
+            );
+
+
+        boton.disabled = true;
 
         boton.textContent =
             "REGISTRANDO...";
 
 
-        const {
-            data,
-            error
-        } =
-        await supabaseClient
+        const resultado =
+            await supabaseClient
 
             .from("hallazgos_mc")
 
-            .insert([registro])
+            .insert([
+                registro
+            ])
 
             .select();
 
 
-        boton.disabled =
-            false;
+        boton.disabled = false;
 
         boton.textContent =
             "REGISTRAR HALLAZGO";
 
 
-        if(error){
+        if(
+            resultado.error
+        ){
 
-            console.error(error);
+            console.error(
+                resultado.error
+            );
 
 
             if(
-                error.code ===
+                resultado.error.code ===
                 "23505"
             ){
 
@@ -1346,7 +1793,7 @@ document
 
                 mostrarMensaje(
                     "Error al registrar: " +
-                    error.message,
+                    resultado.error.message,
                     "error"
                 );
 
@@ -1362,14 +1809,6 @@ document
             "registroForm"
         )
         .reset();
-
-
-        document
-        .getElementById(
-            "fecha"
-        )
-        .value =
-            "Se generará automáticamente";
 
 
         mostrarMensaje(
@@ -1389,7 +1828,9 @@ document
 ===================================================== */
 
 document
-.getElementById("packing")
+.getElementById(
+    "packing"
+)
 .addEventListener(
     "input",
     function(){
@@ -1421,11 +1862,11 @@ function actualizarFiltros(){
         );
 
 
-    const molinoActual =
+    const molinoAnterior =
         molinoSelect.value;
 
 
-    const supervisorActual =
+    const supervisorAnterior =
         supervisorSelect.value;
 
 
@@ -1433,7 +1874,9 @@ function actualizarFiltros(){
         [
             ...new Set(
                 registros
-                .map(r => r.molino)
+                .map(
+                    r => r.molino
+                )
                 .filter(Boolean)
             )
         ]
@@ -1444,7 +1887,9 @@ function actualizarFiltros(){
         [
             ...new Set(
                 registros
-                .map(r => r.supervisor)
+                .map(
+                    r => r.supervisor
+                )
                 .filter(Boolean)
             )
         ]
@@ -1469,10 +1914,9 @@ function actualizarFiltros(){
             option.textContent =
                 molino;
 
-            molinoSelect
-                .appendChild(
-                    option
-                );
+            molinoSelect.appendChild(
+                option
+            );
 
         }
     );
@@ -1496,20 +1940,20 @@ function actualizarFiltros(){
             option.textContent =
                 supervisor;
 
-            supervisorSelect
-                .appendChild(
-                    option
-                );
+            supervisorSelect.appendChild(
+                option
+            );
 
         }
     );
 
 
     molinoSelect.value =
-        molinoActual;
+        molinoAnterior;
+
 
     supervisorSelect.value =
-        supervisorActual;
+        supervisorAnterior;
 
 }
 
@@ -1535,6 +1979,18 @@ function obtenerFiltrados(){
     const hallazgo =
         document.getElementById(
             "filtroHallazgo"
+        ).value;
+
+
+    const status =
+        document.getElementById(
+            "filtroStatus"
+        ).value;
+
+
+    const responsabilidad =
+        document.getElementById(
+            "filtroResponsabilidad"
         ).value;
 
 
@@ -1579,6 +2035,16 @@ function obtenerFiltrados(){
 
                 &&
 
+                (!status ||
+                    r.status === status)
+
+                &&
+
+                (!responsabilidad ||
+                    r.responsabilidad === responsabilidad)
+
+                &&
+
                 (!fechaDesde ||
                     fecha >= fechaDesde)
 
@@ -1605,7 +2071,7 @@ function actualizarDashboard(){
         obtenerFiltrados();
 
 
-    actualizarEstadisticas(
+    actualizarIndicadores(
         datos
     );
 
@@ -1620,12 +2086,12 @@ function actualizarDashboard(){
     );
 
 
-    graficaPie(
+    graficaPareto(
         datos
     );
 
 
-    graficaPareto(
+    graficaPie(
         datos
     );
 
@@ -1635,7 +2101,17 @@ function actualizarDashboard(){
     );
 
 
-    graficaSupervisores(
+    graficaStatus(
+        datos
+    );
+
+
+    graficaResponsabilidad(
+        datos
+    );
+
+
+    graficaSpec(
         datos
     );
 
@@ -1648,10 +2124,10 @@ function actualizarDashboard(){
 
 
 /* =====================================================
-   ESTADISTICAS
+   INDICADORES
 ===================================================== */
 
-function actualizarEstadisticas(
+function actualizarIndicadores(
     datos
 ){
 
@@ -1659,52 +2135,100 @@ function actualizarEstadisticas(
         datos.length;
 
 
-    const molinos =
-        new Set(
-            datos.map(
-                r => r.molino
-            )
-        );
+    const bloqueados =
+        datos.filter(
+            r =>
+                r.status ===
+                "Bloqueado"
+        ).length;
 
 
-    const supervisores =
-        new Set(
-            datos.map(
-                r => r.supervisor
-            )
-        );
+    const propio =
+        datos.filter(
+            r =>
+                r.responsabilidad ===
+                "Propio"
+        ).length;
 
 
-    document.getElementById(
-        "totalMC"
-    ).textContent =
-        total;
+    const molino =
+        datos.filter(
+            r =>
+                r.responsabilidad ===
+                "Molino"
+        ).length;
 
 
-    document.getElementById(
-        "mcConHallazgo"
-    ).textContent =
-        total;
-
-
-    document.getElementById(
-        "porcentajeHallazgo"
-    ).textContent =
+    const porcentajeBloqueados =
         total > 0
-        ? "100%"
-        : "0%";
+        ? (
+            bloqueados /
+            total *
+            100
+        )
+        : 0;
+
+
+    const porcentajePropio =
+        total > 0
+        ? (
+            propio /
+            total *
+            100
+        )
+        : 0;
+
+
+    const porcentajeMolino =
+        total > 0
+        ? (
+            molino /
+            total *
+            100
+        )
+        : 0;
 
 
     document.getElementById(
-        "totalMolinos"
+        "totalHallazgos"
     ).textContent =
-        molinos.size;
+        total;
 
 
     document.getElementById(
-        "totalSupervisores"
+        "porcentajeBloqueados"
     ).textContent =
-        supervisores.size;
+        porcentajeBloqueados
+        .toFixed(1) +
+        "%";
+
+
+    document.getElementById(
+        "cantidadPropio"
+    ).textContent =
+        propio;
+
+
+    document.getElementById(
+        "porcentajePropio"
+    ).textContent =
+        porcentajePropio
+        .toFixed(1) +
+        "%";
+
+
+    document.getElementById(
+        "cantidadMolino"
+    ).textContent =
+        molino;
+
+
+    document.getElementById(
+        "porcentajeMolino"
+    ).textContent =
+        porcentajeMolino
+        .toFixed(1) +
+        "%";
 
 }
 
@@ -1727,17 +2251,20 @@ function mostrarTabla(
         datos.length === 0
     ){
 
-        tabla.innerHTML =
+        tabla.innerHTML = `
 
-            '<tr>' +
+        <tr>
 
-            '<td colspan="8" class="empty">' +
+            <td
+                colspan="11"
+                class="empty"
+            >
+                No hay registros.
+            </td>
 
-            'No hay registros para los filtros seleccionados.' +
+        </tr>
 
-            '</td>' +
-
-            '</tr>';
+        `;
 
         return;
 
@@ -1745,7 +2272,6 @@ function mostrarTabla(
 
 
     tabla.innerHTML =
-
         datos
         .map(
             function(r){
@@ -1765,6 +2291,20 @@ function mostrarTabla(
                         }
                     )
                     : "";
+
+
+                const statusClass =
+                    r.status ===
+                    "Bloqueado"
+                    ? "badge-bloqueado"
+                    : "badge-liberado";
+
+
+                const responsabilidadClass =
+                    r.responsabilidad ===
+                    "Molino"
+                    ? "badge-molino"
+                    : "badge-propio";
 
 
                 return `
@@ -1802,9 +2342,38 @@ function mostrarTabla(
                     </td>
 
                     <td>
-                        <span class="badge">
-                            ${escapar(r.hallazgo)}
+                        ${escapar(r.hallazgo)}
+                    </td>
+
+                    <td>
+
+                        <span
+                            class="badge ${statusClass}"
+                        >
+                            ${escapar(r.status)}
                         </span>
+
+                    </td>
+
+                    <td>
+
+                        <span
+                            class="badge ${responsabilidadClass}"
+                        >
+                            ${escapar(r.responsabilidad)}
+                        </span>
+
+                    </td>
+
+                    <td>
+
+                        <button
+                            class="btn-danger"
+                            onclick="abrirEliminar('${r.id}')"
+                        >
+                            🗑️
+                        </button>
+
                     </td>
 
                 </tr>
@@ -1819,31 +2388,19 @@ function mostrarTabla(
 
 
 /* =====================================================
-   GRAFICA DE MOLINOS
+   GRAFICA GENERICA DE BARRAS
 ===================================================== */
 
-function graficaMolinos(
-    datos
+function generarBarras(
+    contenedorId,
+    conteo,
+    claseBarra = ""
 ){
 
     const contenedor =
         document.getElementById(
-            "graficaMolino"
+            contenedorId
         );
-
-
-    const conteo = {};
-
-
-    datos.forEach(
-        function(r){
-
-            conteo[r.molino] =
-                (conteo[r.molino] || 0)
-                + 1;
-
-        }
-    );
 
 
     const ordenado =
@@ -1851,7 +2408,9 @@ function graficaMolinos(
             conteo
         )
         .sort(
-            (a,b) => b[1] - a[1]
+            (a,b) =>
+                b[1] -
+                a[1]
         );
 
 
@@ -1869,14 +2428,14 @@ function graficaMolinos(
 
     const maximo =
         Math.max(
-            ...ordenado.map(
+            ...ordenado
+            .map(
                 x => x[1]
             )
         );
 
 
     contenedor.innerHTML =
-
         ordenado
         .map(
             function(item){
@@ -1885,7 +2444,8 @@ function graficaMolinos(
                     (
                         item[1] /
                         maximo
-                    ) * 100;
+                    ) *
+                    100;
 
 
                 return `
@@ -1907,7 +2467,7 @@ function graficaMolinos(
                     <div class="bar-container">
 
                         <div
-                            class="bar"
+                            class="bar ${claseBarra}"
                             style="width:${porcentaje}%"
                         ></div>
 
@@ -1925,7 +2485,486 @@ function graficaMolinos(
 
 
 /* =====================================================
-   GRAFICA PIE
+   MOLINOS
+===================================================== */
+
+function graficaMolinos(
+    datos
+){
+
+    const conteo = {};
+
+
+    datos.forEach(
+        function(r){
+
+            conteo[r.molino] =
+                (
+                    conteo[r.molino]
+                    || 0
+                )
+                + 1;
+
+        }
+    );
+
+
+    generarBarras(
+        "graficaMolino",
+        conteo
+    );
+
+}
+
+
+/* =====================================================
+   STATUS
+===================================================== */
+
+function graficaStatus(
+    datos
+){
+
+    const conteo = {
+
+        "Liberado":0,
+
+        "Bloqueado":0
+
+    };
+
+
+    datos.forEach(
+        function(r){
+
+            if(
+                r.status ===
+                "Liberado"
+            ){
+
+                conteo.Liberado++;
+
+            }
+
+
+            if(
+                r.status ===
+                "Bloqueado"
+            ){
+
+                conteo.Bloqueado++;
+
+            }
+
+        }
+    );
+
+
+    const contenedor =
+        document.getElementById(
+            "graficaStatus"
+        );
+
+
+    const total =
+        datos.length;
+
+
+    if(
+        total === 0
+    ){
+
+        contenedor.innerHTML =
+            '<div class="empty">Sin datos.</div>';
+
+        return;
+
+    }
+
+
+    contenedor.innerHTML = `
+
+        <div class="chart-row">
+
+            <div class="chart-label">
+
+                <span>
+                    Liberado
+                </span>
+
+                <span>
+                    ${conteo.Liberado}
+                </span>
+
+            </div>
+
+            <div class="bar-container">
+
+                <div
+                    class="bar bar-liberado"
+                    style="
+                        width:
+                        ${
+                            conteo.Liberado /
+                            total *
+                            100
+                        }%
+                    "
+                ></div>
+
+            </div>
+
+        </div>
+
+
+        <div class="chart-row">
+
+            <div class="chart-label">
+
+                <span>
+                    Bloqueado
+                </span>
+
+                <span>
+                    ${conteo.Bloqueado}
+                </span>
+
+            </div>
+
+            <div class="bar-container">
+
+                <div
+                    class="bar bar-bloqueado"
+                    style="
+                        width:
+                        ${
+                            conteo.Bloqueado /
+                            total *
+                            100
+                        }%
+                    "
+                ></div>
+
+            </div>
+
+        </div>
+
+    `;
+
+}
+
+
+/* =====================================================
+   RESPONSABILIDAD
+===================================================== */
+
+function graficaResponsabilidad(
+    datos
+){
+
+    const conteo = {
+
+        "Molino":0,
+
+        "Propio":0
+
+    };
+
+
+    datos.forEach(
+        function(r){
+
+            if(
+                r.responsabilidad ===
+                "Molino"
+            ){
+
+                conteo.Molino++;
+
+            }
+
+
+            if(
+                r.responsabilidad ===
+                "Propio"
+            ){
+
+                conteo.Propio++;
+
+            }
+
+        }
+    );
+
+
+    const contenedor =
+        document.getElementById(
+            "graficaResponsabilidad"
+        );
+
+
+    const total =
+        datos.length;
+
+
+    if(
+        total === 0
+    ){
+
+        contenedor.innerHTML =
+            '<div class="empty">Sin datos.</div>';
+
+        return;
+
+    }
+
+
+    contenedor.innerHTML = `
+
+        <div class="chart-row">
+
+            <div class="chart-label">
+
+                <span>
+                    Molino
+                </span>
+
+                <span>
+                    ${conteo.Molino}
+                    ·
+                    ${
+                        (
+                            conteo.Molino /
+                            total *
+                            100
+                        ).toFixed(1)
+                    }%
+                </span>
+
+            </div>
+
+            <div class="bar-container">
+
+                <div
+                    class="bar bar-molino"
+                    style="
+                        width:
+                        ${
+                            conteo.Molino /
+                            total *
+                            100
+                        }%
+                    "
+                ></div>
+
+            </div>
+
+        </div>
+
+
+        <div class="chart-row">
+
+            <div class="chart-label">
+
+                <span>
+                    Propio
+                </span>
+
+                <span>
+                    ${conteo.Propio}
+                    ·
+                    ${
+                        (
+                            conteo.Propio /
+                            total *
+                            100
+                        ).toFixed(1)
+                    }%
+                </span>
+
+            </div>
+
+            <div class="bar-container">
+
+                <div
+                    class="bar bar-propio"
+                    style="
+                        width:
+                        ${
+                            conteo.Propio /
+                            total *
+                            100
+                        }%
+                    "
+                ></div>
+
+            </div>
+
+        </div>
+
+    `;
+
+}
+
+
+/* =====================================================
+   SPEC
+===================================================== */
+
+function graficaSpec(
+    datos
+){
+
+    const conteo = {};
+
+
+    datos.forEach(
+        function(r){
+
+            conteo[r.spec] =
+                (
+                    conteo[r.spec]
+                    || 0
+                )
+                + 1;
+
+        }
+    );
+
+
+    generarBarras(
+        "graficaSpec",
+        conteo
+    );
+
+}
+
+
+/* =====================================================
+   PARETO
+===================================================== */
+
+function graficaPareto(
+    datos
+){
+
+    const contenedor =
+        document.getElementById(
+            "graficaPareto"
+        );
+
+
+    const conteo = {};
+
+
+    datos.forEach(
+        function(r){
+
+            conteo[r.hallazgo] =
+                (
+                    conteo[r.hallazgo]
+                    || 0
+                )
+                + 1;
+
+        }
+    );
+
+
+    const ordenado =
+        Object.entries(
+            conteo
+        )
+        .sort(
+            (a,b) =>
+                b[1] -
+                a[1]
+        );
+
+
+    if(
+        ordenado.length === 0
+    ){
+
+        contenedor.innerHTML =
+            '<div class="empty">Sin datos.</div>';
+
+        return;
+
+    }
+
+
+    const total =
+        datos.length;
+
+
+    let acumulado = 0;
+
+
+    contenedor.innerHTML =
+        ordenado
+        .map(
+            function(item){
+
+                const porcentaje =
+                    item[1] /
+                    total *
+                    100;
+
+
+                acumulado +=
+                    porcentaje;
+
+
+                return `
+
+                <div class="pareto-item">
+
+                    <div class="pareto-label">
+
+                        <span>
+                            ${escapar(item[0])}
+                        </span>
+
+                        <span>
+                            ${item[1]}
+                        </span>
+
+                    </div>
+
+                    <div class="pareto-bar-container">
+
+                        <div
+                            class="pareto-bar"
+                            style="
+                                width:
+                                ${porcentaje}%
+                            "
+                        ></div>
+
+                    </div>
+
+                    <div class="pareto-percent">
+
+                        ${porcentaje.toFixed(1)}%
+                        · acumulado
+                        ${acumulado.toFixed(1)}%
+
+                    </div>
+
+                </div>
+
+                `;
+
+            }
+        )
+        .join("");
+
+}
+
+
+/* =====================================================
+   PIE
 ===================================================== */
 
 function graficaPie(
@@ -1945,7 +2984,10 @@ function graficaPie(
         function(r){
 
             conteo[r.hallazgo] =
-                (conteo[r.hallazgo] || 0)
+                (
+                    conteo[r.hallazgo]
+                    || 0
+                )
                 + 1;
 
         }
@@ -1980,8 +3022,8 @@ function graficaPie(
         "#506d89",
         "#7f9db8",
         "#aebdca",
-        "#c9d2d9",
-        "#687784"
+        "#687784",
+        "#9aabb8"
 
     ];
 
@@ -1994,10 +3036,9 @@ function graficaPie(
             function(item,index){
 
                 const porcentaje =
-                    (
-                        item[1] /
-                        total
-                    ) * 100;
+                    item[1] /
+                    total *
+                    100;
 
 
                 const inicio =
@@ -2008,15 +3049,25 @@ function graficaPie(
                     porcentaje;
 
 
-                return
-                    `${colores[index % colores.length]} ${inicio}% ${acumulado}%`;
+                return (
+                    colores[
+                        index %
+                        colores.length
+                    ]
+                    +
+                    " "
+                    +
+                    inicio
+                    +
+                    "% "
+                    +
+                    acumulado
+                    +
+                    "%"
+                );
 
             }
         );
-
-
-    const gradient =
-        segmentos.join(",");
 
 
     let leyenda = "";
@@ -2026,10 +3077,9 @@ function graficaPie(
         function(item,index){
 
             const porcentaje =
-                (
-                    item[1] /
-                    total
-                ) * 100;
+                item[1] /
+                total *
+                100;
 
 
             leyenda += `
@@ -2038,14 +3088,29 @@ function graficaPie(
 
                 <span
                     class="legend-color"
-                    style="background:${colores[index % colores.length]}"
+                    style="
+                        background:
+                        ${
+                            colores[
+                                index %
+                                colores.length
+                            ]
+                        }
+                    "
                 ></span>
 
                 <span>
+
                     ${escapar(item[0])}
+
                     ·
+
                     ${item[1]}
-                    (${porcentaje.toFixed(1)}%)
+
+                    ·
+
+                    ${porcentaje.toFixed(1)}%
+
                 </span>
 
             </div>
@@ -2064,7 +3129,9 @@ function graficaPie(
                 class="pie"
                 style="
                     background:
-                    conic-gradient(${gradient});
+                    conic-gradient(
+                        ${segmentos.join(",")}
+                    );
                 "
             ></div>
 
@@ -2077,123 +3144,6 @@ function graficaPie(
         </div>
 
     `;
-
-}
-
-
-/* =====================================================
-   PARETO
-===================================================== */
-
-function graficaPareto(
-    datos
-){
-
-    const contenedor =
-        document.getElementById(
-            "graficaPareto"
-        );
-
-
-    const conteo = {};
-
-
-    datos.forEach(
-        function(r){
-
-            conteo[r.hallazgo] =
-                (conteo[r.hallazgo] || 0)
-                + 1;
-
-        }
-    );
-
-
-    const ordenado =
-        Object.entries(
-            conteo
-        )
-        .sort(
-            (a,b) => b[1] - a[1]
-        );
-
-
-    if(
-        ordenado.length === 0
-    ){
-
-        contenedor.innerHTML =
-            '<div class="empty">Sin datos.</div>';
-
-        return;
-
-    }
-
-
-    const total =
-        datos.length;
-
-
-    let acumulado =
-        0;
-
-
-    contenedor.innerHTML =
-
-        ordenado
-        .map(
-            function(item){
-
-                const porcentaje =
-                    (
-                        item[1] /
-                        total
-                    ) * 100;
-
-
-                acumulado +=
-                    porcentaje;
-
-
-                return `
-
-                <div class="pareto-item">
-
-                    <div class="pareto-label">
-
-                        <span>
-                            ${escapar(item[0])}
-                        </span>
-
-                        <span>
-                            ${item[1]}
-                        </span>
-
-                    </div>
-
-                    <div class="pareto-bar-container">
-
-                        <div
-                            class="pareto-bar"
-                            style="width:${porcentaje}%"
-                        ></div>
-
-                    </div>
-
-                    <div class="pareto-percent">
-
-                        ${porcentaje.toFixed(1)}%
-                        · acumulado ${acumulado.toFixed(1)}%
-
-                    </div>
-
-                </div>
-
-                `;
-
-            }
-        )
-        .join("");
 
 }
 
@@ -2218,7 +3168,9 @@ function graficaTendencia(
     datos.forEach(
         function(r){
 
-            if(!r.fecha){
+            if(
+                !r.fecha
+            ){
                 return;
             }
 
@@ -2230,8 +3182,10 @@ function graficaTendencia(
 
 
             const clave =
-                fecha.getFullYear() +
-                "-" +
+                fecha.getFullYear()
+                +
+                "-"
+                +
                 String(
                     fecha.getMonth()+1
                 )
@@ -2242,7 +3196,10 @@ function graficaTendencia(
 
 
             meses[clave] =
-                (meses[clave] || 0)
+                (
+                    meses[clave]
+                    || 0
+                )
                 + 1;
 
         }
@@ -2273,19 +3230,20 @@ function graficaTendencia(
     }
 
 
+    const ancho = 700;
+
+    const alto = 240;
+
+    const margen = 40;
+
+
     const maximo =
         Math.max(
-            ...datosMes.map(
+            ...datosMes
+            .map(
                 x => x[1]
             )
         );
-
-
-    const ancho = 700;
-
-    const alto = 230;
-
-    const margen = 35;
 
 
     const puntos =
@@ -2294,14 +3252,18 @@ function graficaTendencia(
 
                 const x =
                     datosMes.length === 1
-                    ? ancho / 2
-                    : margen +
+                    ?
+                    ancho/2
+                    :
+                    margen
+                    +
                     (
                         index /
                         (
                             datosMes.length-1
                         )
-                    ) *
+                    )
+                    *
                     (
                         ancho -
                         margen*2
@@ -2310,11 +3272,13 @@ function graficaTendencia(
 
                 const y =
                     alto -
-                    margen -
+                    margen
+                    -
                     (
                         item[1] /
                         maximo
-                    ) *
+                    )
+                    *
                     (
                         alto -
                         margen*2
@@ -2322,10 +3286,15 @@ function graficaTendencia(
 
 
                 return {
+
                     x:x,
+
                     y:y,
+
                     valor:item[1],
+
                     mes:item[0]
+
                 };
 
             }
@@ -2336,12 +3305,16 @@ function graficaTendencia(
         puntos
         .map(
             p =>
-                `${p.x},${p.y}`
+                p.x
+                +
+                ","
+                +
+                p.y
         )
         .join(" ");
 
 
-    let puntosSVG = "";
+    let svgPuntos = "";
 
     let etiquetas = "";
 
@@ -2349,39 +3322,39 @@ function graficaTendencia(
     puntos.forEach(
         function(p){
 
-            puntosSVG += `
+            svgPuntos += `
 
-                <circle
-                    cx="${p.x}"
-                    cy="${p.y}"
-                    r="5"
-                    fill="#0f2742"
-                />
+            <circle
+                cx="${p.x}"
+                cy="${p.y}"
+                r="5"
+                fill="#0f2742"
+            />
 
             `;
 
 
             etiquetas += `
 
-                <text
-                    x="${p.x}"
-                    y="${p.y - 10}"
-                    text-anchor="middle"
-                    font-size="12"
-                    fill="#1f2937"
-                >
-                    ${p.valor}
-                </text>
+            <text
+                x="${p.x}"
+                y="${p.y - 10}"
+                text-anchor="middle"
+                font-size="12"
+                fill="#1f2937"
+            >
+                ${p.valor}
+            </text>
 
-                <text
-                    x="${p.x}"
-                    y="${alto - 8}"
-                    text-anchor="middle"
-                    font-size="11"
-                    fill="#667085"
-                >
-                    ${p.mes}
-                </text>
+            <text
+                x="${p.x}"
+                y="${alto - 10}"
+                text-anchor="middle"
+                font-size="11"
+                fill="#667085"
+            >
+                ${p.mes}
+            </text>
 
             `;
 
@@ -2391,142 +3364,38 @@ function graficaTendencia(
 
     contenedor.innerHTML = `
 
-        <svg
-            viewBox="0 0 ${ancho} ${alto}"
-            preserveAspectRatio="none"
-        >
+    <svg
+        viewBox="
+            0
+            0
+            ${ancho}
+            ${alto}
+        "
+        preserveAspectRatio="none"
+    >
 
-            <line
-                x1="${margen}"
-                y1="${alto-margen}"
-                x2="${ancho-margen}"
-                y2="${alto-margen}"
-                stroke="#ccd3da"
-            />
+        <line
+            x1="${margen}"
+            y1="${alto-margen}"
+            x2="${ancho-margen}"
+            y2="${alto-margen}"
+            stroke="#ccd3da"
+        />
 
-            <polyline
-                points="${polyline}"
-                fill="none"
-                stroke="#0f2742"
-                stroke-width="3"
-            />
+        <polyline
+            points="${polyline}"
+            fill="none"
+            stroke="#0f2742"
+            stroke-width="3"
+        />
 
-            ${puntosSVG}
+        ${svgPuntos}
 
-            ${etiquetas}
+        ${etiquetas}
 
-        </svg>
+    </svg>
 
     `;
-
-}
-
-
-/* =====================================================
-   SUPERVISORES
-===================================================== */
-
-function graficaSupervisores(
-    datos
-){
-
-    const contenedor =
-        document.getElementById(
-            "graficaSupervisor"
-        );
-
-
-    const conteo = {};
-
-
-    datos.forEach(
-        function(r){
-
-            conteo[r.supervisor] =
-                (
-                    conteo[r.supervisor]
-                    || 0
-                )
-                + 1;
-
-        }
-    );
-
-
-    const ordenado =
-        Object.entries(
-            conteo
-        )
-        .sort(
-            (a,b) => b[1]-a[1]
-        );
-
-
-    if(
-        ordenado.length === 0
-    ){
-
-        contenedor.innerHTML =
-            '<div class="empty">Sin datos.</div>';
-
-        return;
-
-    }
-
-
-    const maximo =
-        Math.max(
-            ...ordenado.map(
-                x => x[1]
-            )
-        );
-
-
-    contenedor.innerHTML =
-
-        ordenado
-        .map(
-            function(item){
-
-                const porcentaje =
-                    (
-                        item[1] /
-                        maximo
-                    ) * 100;
-
-
-                return `
-
-                <div class="chart-row">
-
-                    <div class="chart-label">
-
-                        <span>
-                            ${escapar(item[0])}
-                        </span>
-
-                        <span>
-                            ${item[1]}
-                        </span>
-
-                    </div>
-
-                    <div class="bar-container">
-
-                        <div
-                            class="bar"
-                            style="width:${porcentaje}%"
-                        ></div>
-
-                    </div>
-
-                </div>
-
-                `;
-
-            }
-        )
-        .join("");
 
 }
 
@@ -2541,75 +3410,104 @@ function mostrarResumen(
 
     const contenedor =
         document.getElementById(
-            "resumenFiltros"
+            "resumen"
         );
 
 
+    const bloqueados =
+        datos.filter(
+            r =>
+                r.status ===
+                "Bloqueado"
+        ).length;
+
+
+    const liberados =
+        datos.filter(
+            r =>
+                r.status ===
+                "Liberado"
+        ).length;
+
+
+    const propio =
+        datos.filter(
+            r =>
+                r.responsabilidad ===
+                "Propio"
+        ).length;
+
+
     const molino =
-        document.getElementById(
-            "filtroMolino"
-        ).value;
-
-
-    const supervisor =
-        document.getElementById(
-            "filtroSupervisor"
-        ).value;
-
-
-    const hallazgo =
-        document.getElementById(
-            "filtroHallazgo"
-        ).value;
-
-
-    const desde =
-        document.getElementById(
-            "fechaDesde"
-        ).value;
-
-
-    const hasta =
-        document.getElementById(
-            "fechaHasta"
-        ).value;
+        datos.filter(
+            r =>
+                r.responsabilidad ===
+                "Molino"
+        ).length;
 
 
     contenedor.innerHTML = `
 
-        <div style="display:grid;gap:10px">
+    <div style="
+        display:grid;
+        gap:12px;
+    ">
 
-            <div>
-                <strong>Registros:</strong>
-                ${datos.length}
-            </div>
+        <div>
 
-            <div>
-                <strong>Molino:</strong>
-                ${escapar(molino || "Todos")}
-            </div>
+            <strong>
+                Hallazgos:
+            </strong>
 
-            <div>
-                <strong>Supervisor:</strong>
-                ${escapar(supervisor || "Todos")}
-            </div>
-
-            <div>
-                <strong>Hallazgo:</strong>
-                ${escapar(hallazgo || "Todos")}
-            </div>
-
-            <div>
-                <strong>Desde:</strong>
-                ${escapar(desde || "Sin límite")}
-            </div>
-
-            <div>
-                <strong>Hasta:</strong>
-                ${escapar(hasta || "Sin límite")}
-            </div>
+            ${datos.length}
 
         </div>
+
+
+        <div>
+
+            <strong>
+                Bloqueados:
+            </strong>
+
+            ${bloqueados}
+
+        </div>
+
+
+        <div>
+
+            <strong>
+                Liberados:
+            </strong>
+
+            ${liberados}
+
+        </div>
+
+
+        <div>
+
+            <strong>
+                Responsabilidad propia:
+            </strong>
+
+            ${propio}
+
+        </div>
+
+
+        <div>
+
+            <strong>
+                Responsabilidad Molino:
+            </strong>
+
+            ${molino}
+
+        </div>
+
+    </div>
 
     `;
 
@@ -2617,7 +3515,7 @@ function mostrarResumen(
 
 
 /* =====================================================
-   EVENTOS FILTROS
+   EVENTOS DE FILTROS
 ===================================================== */
 
 [
@@ -2625,7 +3523,9 @@ function mostrarResumen(
     "fechaHasta",
     "filtroMolino",
     "filtroSupervisor",
-    "filtroHallazgo"
+    "filtroHallazgo",
+    "filtroStatus",
+    "filtroResponsabilidad"
 ]
 .forEach(
     function(id){
@@ -2678,6 +3578,16 @@ document
         ).value = "";
 
 
+        document.getElementById(
+            "filtroStatus"
+        ).value = "";
+
+
+        document.getElementById(
+            "filtroResponsabilidad"
+        ).value = "";
+
+
         actualizarDashboard();
 
     }
@@ -2685,7 +3595,7 @@ document
 
 
 /* =====================================================
-   ACTUALIZAR DATOS
+   ACTUALIZAR
 ===================================================== */
 
 document
@@ -2699,12 +3609,410 @@ document
 
 
 /* =====================================================
+   ABRIR ELIMINAR
+===================================================== */
+
+window.abrirEliminar =
+function(id){
+
+    registroAEliminar =
+        registros.find(
+            r =>
+                String(r.id) ===
+                String(id)
+        );
+
+
+    if(
+        !registroAEliminar
+    ){
+
+        return;
+
+    }
+
+
+    document.getElementById(
+        "deleteInfo"
+    ).innerHTML = `
+
+        <strong>
+            PACKING:
+        </strong>
+
+        ${escapar(
+            registroAEliminar.packing
+        )}
+
+        <br><br>
+
+        <strong>
+            Hallazgo:
+        </strong>
+
+        ${escapar(
+            registroAEliminar.hallazgo
+        )}
+
+    `;
+
+
+    document.getElementById(
+        "deleteMessage"
+    ).textContent = "";
+
+
+    document.getElementById(
+        "deleteModal"
+    ).style.display =
+        "flex";
+
+};
+
+
+/* =====================================================
+   CANCELAR ELIMINAR
+===================================================== */
+
+document
+.getElementById(
+    "cancelDelete"
+)
+.addEventListener(
+    "click",
+    function(){
+
+        registroAEliminar =
+            null;
+
+        document.getElementById(
+            "deleteModal"
+        ).style.display =
+            "none";
+
+    }
+);
+
+
+/* =====================================================
+   CANCELAR LOGIN
+===================================================== */
+
+document
+.getElementById(
+    "cancelLogin"
+)
+.addEventListener(
+    "click",
+    function(){
+
+        document.getElementById(
+            "loginModal"
+        ).style.display =
+            "none";
+
+    }
+);
+
+
+/* =====================================================
+   CONFIRMAR ELIMINACION
+===================================================== */
+
+document
+.getElementById(
+    "confirmDelete"
+)
+.addEventListener(
+    "click",
+    async function(){
+
+        if(
+            !registroAEliminar
+        ){
+
+            return;
+
+        }
+
+
+        const boton =
+            document.getElementById(
+                "confirmDelete"
+            );
+
+
+        boton.disabled = true;
+
+        boton.textContent =
+            "ELIMINANDO...";
+
+
+        const resultado =
+            await supabaseClient
+
+            .from("hallazgos_mc")
+
+            .delete()
+
+            .eq(
+                "id",
+                registroAEliminar.id
+            );
+
+
+        boton.disabled = false;
+
+        boton.textContent =
+            "ELIMINAR";
+
+
+        if(
+            resultado.error
+        ){
+
+            console.error(
+                resultado.error
+            );
+
+
+            document.getElementById(
+                "deleteMessage"
+            ).textContent =
+                "No fue posible eliminar el registro. " +
+                resultado.error.message;
+
+            document.getElementById(
+                "deleteMessage"
+            ).className =
+                "message error";
+
+
+            return;
+
+        }
+
+
+        document.getElementById(
+            "deleteModal"
+        ).style.display =
+            "none";
+
+
+        registroAEliminar =
+            null;
+
+
+        await cargarDatos();
+
+    }
+);
+
+
+/* =====================================================
+   ABRIR LOGIN AL PRESIONAR ELIMINAR
+===================================================== */
+
+document
+.getElementById(
+    "tablaRegistros"
+)
+.addEventListener(
+    "click",
+    function(event){
+
+        const boton =
+            event.target.closest(
+                ".btn-danger"
+            );
+
+
+        if(
+            !boton
+        ){
+
+            return;
+
+        }
+
+
+        const onclick =
+            boton.getAttribute(
+                "onclick"
+            );
+
+
+        const id =
+            onclick
+            .match(
+                /'([^']+)'/
+            );
+
+
+        if(
+            !id
+        ){
+
+            return;
+
+        }
+
+
+        registroAEliminar =
+            registros.find(
+                r =>
+                    String(r.id) ===
+                    String(id[1])
+            );
+
+
+        if(
+            !registroAEliminar
+        ){
+
+            return;
+
+        }
+
+
+        document.getElementById(
+            "deleteModal"
+        ).style.display =
+            "flex";
+
+
+        document.getElementById(
+            "loginModal"
+        ).style.display =
+            "flex";
+
+    }
+);
+
+
+/* =====================================================
+   LOGIN ADMINISTRADOR
+===================================================== */
+
+document
+.getElementById(
+    "loginButton"
+)
+.addEventListener(
+    "click",
+    async function(){
+
+        const email =
+            document.getElementById(
+                "adminEmail"
+            ).value.trim();
+
+
+        const password =
+            document.getElementById(
+                "adminPassword"
+            ).value;
+
+
+        const mensaje =
+            document.getElementById(
+                "loginMessage"
+            );
+
+
+        if(
+            !email ||
+            !password
+        ){
+
+            mensaje.textContent =
+                "Ingresa correo y contraseña.";
+
+            mensaje.className =
+                "message error";
+
+            return;
+
+        }
+
+
+        const boton =
+            document.getElementById(
+                "loginButton"
+            );
+
+
+        boton.disabled = true;
+
+        boton.textContent =
+            "ENTRANDO...";
+
+
+        const resultado =
+            await supabaseClient
+            .auth
+            .signInWithPassword({
+
+                email:email,
+
+                password:password
+
+            });
+
+
+        boton.disabled = false;
+
+        boton.textContent =
+            "ENTRAR";
+
+
+        if(
+            resultado.error
+        ){
+
+            mensaje.textContent =
+                "Correo o contraseña incorrectos.";
+
+            mensaje.className =
+                "message error";
+
+            return;
+
+        }
+
+
+        document.getElementById(
+            "loginModal"
+        ).style.display =
+            "none";
+
+
+        mensaje.textContent = "";
+
+
+        document.getElementById(
+            "adminPassword"
+        ).value = "";
+
+
+        document.getElementById(
+            "deleteModal"
+        ).style.display =
+            "flex";
+
+    }
+);
+
+
+/* =====================================================
    REALTIME
 ===================================================== */
 
 function activarRealtime(){
 
-    if(canalRealtime){
+    if(
+        canalRealtime
+    ){
 
         supabaseClient
         .removeChannel(
@@ -2735,18 +4043,54 @@ function activarRealtime(){
             }
         )
 
-        .subscribe(
-            function(status){
-
-                console.log(
-                    "Realtime:",
-                    status
-                );
-
-            }
-        );
+        .subscribe();
 
 }
+
+
+/* =====================================================
+   CERRAR MODALES AL HACER CLICK AFUERA
+===================================================== */
+
+window.addEventListener(
+    "click",
+    function(event){
+
+        const loginModal =
+            document.getElementById(
+                "loginModal"
+            );
+
+
+        const deleteModal =
+            document.getElementById(
+                "deleteModal"
+            );
+
+
+        if(
+            event.target ===
+            loginModal
+        ){
+
+            loginModal.style.display =
+                "none";
+
+        }
+
+
+        if(
+            event.target ===
+            deleteModal
+        ){
+
+            deleteModal.style.display =
+                "none";
+
+        }
+
+    }
+);
 
 
 /* =====================================================
