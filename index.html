@@ -1,4046 +1,1457 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Bitácora de Hallazgos de Materia Prima</title>
+<title>Bitácora de Hallazgos MC</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
-
-*{
-    box-sizing:border-box;
+* {
+    box-sizing: border-box;
 }
 
-body{
-    margin:0;
-    font-family:Arial,Helvetica,sans-serif;
-    background:#f3f5f7;
-    color:#1f2937;
+body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    background: #f1f4f8;
+    color: #102d4d;
 }
 
-.container{
-    max-width:1400px;
-    margin:auto;
-    padding:20px;
+.container {
+    width: 95%;
+    max-width: 1400px;
+    margin: 25px auto;
 }
 
-header{
-    background:#0f2742;
-    color:white;
-    padding:24px;
-    border-radius:14px;
-    margin-bottom:20px;
+.header {
+    background: #102d4d;
+    color: white;
+    padding: 25px;
+    border-radius: 16px;
+    margin-bottom: 18px;
 }
 
-header h1{
-    margin:0 0 6px;
-    font-size:27px;
+.header h1 {
+    margin: 0 0 5px;
+    font-size: 28px;
 }
 
-header p{
-    margin:0;
-    opacity:.85;
+.header p {
+    margin: 0 0 10px;
+    color: #dbe5ef;
 }
 
-.status{
-    margin-top:12px;
-    font-size:13px;
+.connection {
+    font-size: 14px;
+    color: #5cff9d;
 }
 
-.status-ok{
-    color:#8ee6a9;
+.cards {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-bottom: 18px;
 }
 
-.status-error{
-    color:#ffb4b4;
+.card {
+    background: white;
+    border-radius: 14px;
+    padding: 18px;
+    border-left: 5px solid #102d4d;
+    box-shadow: 0 2px 8px rgba(0,0,0,.06);
 }
 
-
-/* =========================
-   CARDS
-========================= */
-
-.card,
-.chart-card{
-    background:white;
-    border-radius:14px;
-    padding:20px;
-    margin-bottom:20px;
-    box-shadow:0 2px 8px rgba(0,0,0,.06);
+.card-title {
+    font-size: 13px;
+    color: #63758a;
+    margin-bottom: 7px;
 }
 
-.card h2,
-.chart-card h3{
-    margin-top:0;
-    color:#0f2742;
+.card-value {
+    font-size: 30px;
+    font-weight: bold;
 }
 
-
-/* =========================
-   INDICADORES
-========================= */
-
-.stats{
-    display:grid;
-    grid-template-columns:repeat(4,1fr);
-    gap:15px;
-    margin-bottom:20px;
+.card-percent {
+    font-size: 13px;
+    color: #63758a;
+    margin-top: 4px;
 }
 
-.stat{
-    background:white;
-    border-radius:12px;
-    padding:18px;
-    border-left:5px solid #0f2742;
-    box-shadow:0 2px 8px rgba(0,0,0,.06);
+.section {
+    background: white;
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 18px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.06);
 }
 
-.stat-title{
-    font-size:13px;
-    color:#667085;
-    margin-bottom:7px;
+.section h2 {
+    margin-top: 0;
+    font-size: 21px;
 }
 
-.stat-number{
-    font-size:28px;
-    font-weight:bold;
-    color:#0f2742;
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
 }
 
-.stat-detail{
-    margin-top:5px;
-    font-size:13px;
-    color:#667085;
+.field {
+    display: flex;
+    flex-direction: column;
 }
 
-
-/* =========================
-   FORMULARIO
-========================= */
-
-.form-grid{
-    display:grid;
-    grid-template-columns:repeat(2,1fr);
-    gap:15px;
+.field.full {
+    grid-column: 1 / -1;
 }
 
-.field{
-    display:flex;
-    flex-direction:column;
-}
-
-.field label{
-    font-weight:bold;
-    font-size:13px;
-    margin-bottom:6px;
+label {
+    font-weight: bold;
+    font-size: 13px;
+    margin-bottom: 6px;
 }
 
 input,
-select{
-    width:100%;
-    padding:12px;
-    border:1px solid #ccd3da;
-    border-radius:8px;
-    font-size:16px;
-    background:white;
+select {
+    width: 100%;
+    padding: 11px;
+    border: 1px solid #cbd5df;
+    border-radius: 8px;
+    font-size: 15px;
+    background: white;
 }
 
 input:focus,
-select:focus{
-    outline:none;
-    border-color:#0f2742;
+select:focus {
+    outline: none;
+    border-color: #102d4d;
 }
 
-.full{
-    grid-column:1/-1;
+.help {
+    font-size: 12px;
+    color: #63758a;
+    margin-top: 5px;
 }
 
-.small-note{
-    font-size:12px;
-    color:#667085;
-    margin-top:5px;
+button {
+    border: none;
+    border-radius: 8px;
+    padding: 12px 18px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
 }
 
-button{
-    border:0;
-    border-radius:9px;
-    padding:12px 17px;
-    font-size:14px;
-    font-weight:bold;
-    cursor:pointer;
+.btn-primary {
+    width: 100%;
+    background: #102d4d;
+    color: white;
+    margin-top: 8px;
 }
 
-button:disabled{
-    opacity:.6;
-    cursor:not-allowed;
+.btn-primary:hover {
+    background: #183f67;
 }
 
-.btn-primary{
-    background:#0f2742;
-    color:white;
-    width:100%;
+.btn-danger {
+    background: #b42318;
+    color: white;
 }
 
-.btn-primary:hover{
-    background:#193c61;
+.btn-secondary {
+    background: #e8edf3;
+    color: #102d4d;
 }
 
-.btn-secondary{
-    background:#e7edf3;
-    color:#0f2742;
+.btn-small {
+    padding: 7px 10px;
+    font-size: 12px;
 }
 
-.btn-danger{
-    background:#b42318;
-    color:white;
-    padding:8px 11px;
-    font-size:12px;
+.status-message {
+    margin-top: 10px;
+    font-size: 14px;
+    font-weight: bold;
 }
 
-.btn-danger:hover{
-    background:#8f1c13;
+.filters {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
 }
 
-
-/* =========================
-   MENSAJES
-========================= */
-
-.message{
-    margin-top:12px;
-    font-weight:bold;
-    font-size:14px;
+.filters label {
+    font-size: 12px;
 }
 
-.success{
-    color:#16803c;
+.charts {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
 }
 
-.error{
-    color:#b42318;
+.chart-box {
+    position: relative;
+    min-height: 330px;
 }
 
-
-/* =========================
-   FILTROS
-========================= */
-
-.filters{
-    display:grid;
-    grid-template-columns:repeat(4,1fr);
-    gap:12px;
+.chart-box h3 {
+    margin-top: 0;
+    font-size: 16px;
 }
 
-.actions{
-    display:flex;
-    gap:10px;
-    flex-wrap:wrap;
+.table-container {
+    overflow-x: auto;
 }
 
-
-/* =========================
-   GRAFICAS
-========================= */
-
-.dashboard-grid{
-    display:grid;
-    grid-template-columns:repeat(2,1fr);
-    gap:20px;
+table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 1050px;
 }
 
-.chart-area{
-    min-height:270px;
+th {
+    background: #102d4d;
+    color: white;
+    padding: 10px;
+    font-size: 12px;
+    text-align: left;
 }
 
-.chart-row{
-    margin-bottom:15px;
+td {
+    padding: 9px;
+    border-bottom: 1px solid #e3e8ee;
+    font-size: 13px;
 }
 
-.chart-label{
-    display:flex;
-    justify-content:space-between;
-    gap:10px;
-    font-size:13px;
-    font-weight:bold;
-    margin-bottom:5px;
+tr:hover {
+    background: #f7f9fb;
 }
 
-.bar-container{
-    height:25px;
-    background:#e5e7eb;
-    border-radius:6px;
-    overflow:hidden;
+.badge {
+    display: inline-block;
+    padding: 5px 9px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: bold;
 }
 
-.bar{
-    height:100%;
-    background:#0f2742;
-    border-radius:6px;
+.badge-bloqueado {
+    background: #ffe3e0;
+    color: #a61b12;
 }
 
-.bar-liberado{
-    background:#3c7a57;
+.badge-liberado {
+    background: #dff7e7;
+    color: #137333;
 }
 
-.bar-bloqueado{
-    background:#b42318;
+.badge-molino {
+    background: #fff0d4;
+    color: #8a5700;
 }
 
-.bar-propio{
-    background:#506d89;
+.badge-propio {
+    background: #dcecff;
+    color: #164f8c;
 }
 
-.bar-molino{
-    background:#7f9db8;
+.login-status {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    background: #f4f7fa;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 12px;
 }
 
-
-/* =========================
-   PARETO
-========================= */
-
-.pareto-item{
-    margin-bottom:14px;
+.modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.55);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
 }
 
-.pareto-label{
-    display:flex;
-    justify-content:space-between;
-    font-size:13px;
-    font-weight:bold;
+.modal-content {
+    background: white;
+    width: 100%;
+    max-width: 420px;
+    border-radius: 15px;
+    padding: 25px;
 }
 
-.pareto-bar-container{
-    height:22px;
-    background:#e5e7eb;
-    border-radius:5px;
-    overflow:hidden;
-    margin-top:4px;
+.modal-content h2 {
+    margin-top: 0;
 }
 
-.pareto-bar{
-    height:100%;
-    background:#506d89;
+.modal-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
 }
 
-.pareto-percent{
-    font-size:11px;
-    color:#667085;
-    margin-top:3px;
+.modal-buttons button {
+    flex: 1;
 }
 
-
-/* =========================
-   PIE
-========================= */
-
-.pie-container{
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    gap:30px;
-    flex-wrap:wrap;
+.empty {
+    text-align: center;
+    padding: 25px;
+    color: #63758a;
 }
 
-.pie{
-    width:190px;
-    height:190px;
-    border-radius:50%;
-    background:#e5e7eb;
-}
-
-.legend{
-    display:flex;
-    flex-direction:column;
-    gap:9px;
-    font-size:12px;
-}
-
-.legend-item{
-    display:flex;
-    align-items:center;
-    gap:7px;
-}
-
-.legend-color{
-    width:13px;
-    height:13px;
-    border-radius:3px;
-}
-
-
-/* =========================
-   LINEA
-========================= */
-
-.line-chart{
-    width:100%;
-    height:270px;
-}
-
-.line-chart svg{
-    width:100%;
-    height:100%;
-}
-
-
-/* =========================
-   TABLA
-========================= */
-
-.table-wrapper{
-    overflow-x:auto;
-}
-
-table{
-    width:100%;
-    border-collapse:collapse;
-    min-width:1150px;
-}
-
-th{
-    background:#0f2742;
-    color:white;
-    padding:11px;
-    text-align:left;
-    font-size:12px;
-}
-
-td{
-    padding:10px;
-    border-bottom:1px solid #e5e7eb;
-    font-size:13px;
-}
-
-tr:hover{
-    background:#f8fafc;
-}
-
-.badge{
-    display:inline-block;
-    padding:5px 9px;
-    border-radius:20px;
-    font-size:11px;
-    font-weight:bold;
-}
-
-.badge-liberado{
-    background:#e5f4ea;
-    color:#16803c;
-}
-
-.badge-bloqueado{
-    background:#fde8e7;
-    color:#b42318;
-}
-
-.badge-molino{
-    background:#e8eef5;
-    color:#0f2742;
-}
-
-.badge-propio{
-    background:#eef2f6;
-    color:#506d89;
-}
-
-.empty{
-    color:#667085;
-    text-align:center;
-    padding:35px 10px;
-}
-
-
-/* =========================
-   MODAL
-========================= */
-
-.modal{
-    display:none;
-    position:fixed;
-    z-index:1000;
-    left:0;
-    top:0;
-    width:100%;
-    height:100%;
-    background:rgba(0,0,0,.55);
-    align-items:center;
-    justify-content:center;
-    padding:20px;
-}
-
-.modal-box{
-    background:white;
-    width:100%;
-    max-width:430px;
-    border-radius:14px;
-    padding:25px;
-    box-shadow:0 10px 35px rgba(0,0,0,.25);
-}
-
-.modal-box h3{
-    margin-top:0;
-    color:#0f2742;
-}
-
-.modal-actions{
-    display:flex;
-    gap:10px;
-    margin-top:18px;
-}
-
-.modal-actions button{
-    flex:1;
-}
-
-.delete-warning{
-    background:#fff4f2;
-    border-left:4px solid #b42318;
-    padding:12px;
-    margin:15px 0;
-    font-size:13px;
-}
-
-
-/* =========================
-   RESPONSIVE
-========================= */
-
-@media(max-width:1050px){
-
-    .stats{
-        grid-template-columns:repeat(2,1fr);
+@media (max-width: 900px) {
+    .cards {
+        grid-template-columns: repeat(2, 1fr);
     }
 
-    .filters{
-        grid-template-columns:repeat(2,1fr);
+    .charts {
+        grid-template-columns: 1fr;
     }
 
-    .dashboard-grid{
-        grid-template-columns:1fr;
+    .filters {
+        grid-template-columns: repeat(2, 1fr);
     }
-
 }
 
-@media(max-width:650px){
-
-    .container{
-        padding:12px;
+@media (max-width: 600px) {
+    .container {
+        width: 94%;
+        margin: 12px auto;
     }
 
-    header{
-        padding:18px;
+    .header h1 {
+        font-size: 22px;
     }
 
-    header h1{
-        font-size:21px;
+    .cards {
+        grid-template-columns: 1fr 1fr;
     }
 
-    .form-grid{
-        grid-template-columns:1fr;
+    .card {
+        padding: 14px;
     }
 
-    .stats{
-        grid-template-columns:1fr 1fr;
+    .card-value {
+        font-size: 24px;
     }
 
-    .filters{
-        grid-template-columns:1fr;
+    .form-grid {
+        grid-template-columns: 1fr;
     }
 
-    .card,
-    .chart-card{
-        padding:15px;
+    .field.full {
+        grid-column: auto;
     }
 
-    .stat-number{
-        font-size:23px;
+    .filters {
+        grid-template-columns: 1fr;
     }
 
+    .section {
+        padding: 15px;
+    }
 }
-
 </style>
-
 </head>
-
 
 <body>
 
 <div class="container">
 
-
-<!-- =====================================================
-     ENCABEZADO
-===================================================== -->
-
-<header>
-
-<h1>
-Bitácora de Hallazgos de Materia Prima
-</h1>
-
-<p>
-Master Coil · Recepción y seguimiento de hallazgos
-</p>
-
-<div
-id="connectionStatus"
-class="status"
->
-Conectando con la base de datos...
-</div>
-
-</header>
-
-
-<!-- =====================================================
-     INDICADORES
-===================================================== -->
-
-<div class="stats">
-
-
-<div class="stat">
-
-<div class="stat-title">
-Total de hallazgos
-</div>
-
-<div
-id="totalHallazgos"
-class="stat-number"
->
-0
-</div>
-
-</div>
-
-
-<div class="stat">
-
-<div class="stat-title">
-% de bloqueados
-</div>
-
-<div
-id="porcentajeBloqueados"
-class="stat-number"
->
-0%
-</div>
-
-</div>
-
-
-<div class="stat">
-
-<div class="stat-title">
-Responsabilidad propia
-</div>
-
-<div
-id="cantidadPropio"
-class="stat-number"
->
-0
-</div>
-
-<div
-id="porcentajePropio"
-class="stat-detail"
->
-0%
-</div>
-
-</div>
-
-
-<div class="stat">
-
-<div class="stat-title">
-Responsabilidad Molino
-</div>
-
-<div
-id="cantidadMolino"
-class="stat-number"
->
-0
-</div>
-
-<div
-id="porcentajeMolino"
-class="stat-detail"
->
-0%
-</div>
-
-</div>
-
-
-</div>
-
-
-<!-- =====================================================
-     REGISTRO
-===================================================== -->
-
-<div class="card">
-
-<h2>
-Registrar Hallazgo
-</h2>
-
-
-<form id="registroForm">
-
-
-<div class="form-grid">
-
-
-<div class="field full">
-
-<label>
-PACKING · exactamente 15 dígitos *
-</label>
-
-<input
-type="text"
-id="packing"
-inputmode="numeric"
-maxlength="15"
-placeholder="Ej. 123456789012345"
-required
->
-
-<div class="small-note">
-Debe contener exactamente 15 números.
-</div>
-
-</div>
-
-
-<div class="field">
-
-<label>
-SPEC *
-</label>
-
-<input
-type="text"
-id="spec"
-placeholder="Ej. SP270C"
-required
->
-
-</div>
-
-
-<div class="field">
-
-<label>
-ESPESOR *
-</label>
-
-<input
-type="text"
-id="espesor"
-placeholder="Ej. 1.20"
-required
->
-
-</div>
-
-
-<div class="field">
-
-<label>
-ANCHO *
-</label>
-
-<input
-type="text"
-id="ancho"
-placeholder="Ej. 1250"
-required
->
-
-</div>
-
-
-<div class="field">
-
-<label>
-MOLINO *
-</label>
-
-<input
-type="text"
-id="molino"
-placeholder="Ej. Molino A"
-required
->
-
-</div>
-
-
-<div class="field">
-
-<label>
-SUPERVISOR *
-</label>
-
-<input
-type="text"
-id="supervisor"
-placeholder="Nombre del supervisor"
-required
->
-
-</div>
-
-
-<div class="field">
-
-<label>
-HALLAZGO *
-</label>
-
-<select
-id="hallazgo"
-required
->
-
-<option value="">
-Seleccionar hallazgo...
-</option>
-
-<option value="Spec incorrecta">
-Spec incorrecta
-</option>
-
-<option value="Falta de Spec">
-Falta de Spec
-</option>
-
-<option value="Sin etiqueta de molino">
-Sin etiqueta de molino
-</option>
-
-<option value="Error en Expected">
-Error en Expected
-</option>
-
-<option value="Error en Actual">
-Error en Actual
-</option>
-
-<option value="Material sin registro (Expected)">
-Material sin registro (Expected)
-</option>
-
-</select>
-
-</div>
-
-
-<div class="field">
-
-<label>
-STATUS *
-</label>
-
-<select
-id="status"
-required
->
-
-<option value="">
-Seleccionar status...
-</option>
-
-<option value="Liberado">
-Liberado
-</option>
-
-<option value="Bloqueado">
-Bloqueado
-</option>
-
-</select>
-
-</div>
-
-
-<div class="field">
-
-<label>
-RESPONSABILIDAD *
-</label>
-
-<select
-id="responsabilidad"
-required
->
-
-<option value="">
-Seleccionar responsabilidad...
-</option>
-
-<option value="Molino">
-Molino
-</option>
-
-<option value="Propio">
-Propio
-</option>
-
-</select>
-
-</div>
-
-
-<div class="field full">
-
-<label>
-FECHA
-</label>
-
-<input
-type="text"
-value="Se generará automáticamente"
-readonly
->
-
-</div>
-
-
-<div class="full">
-
-<button
-type="submit"
-class="btn-primary"
-id="btnRegistrar"
->
-REGISTRAR HALLAZGO
-</button>
-
-</div>
-
-
-</div>
-
-</form>
-
-
-<div
-id="message"
-class="message"
-></div>
-
-</div>
-
-
-<!-- =====================================================
-     FILTROS
-===================================================== -->
-
-<div class="card">
-
-<h2>
-Filtros del Dashboard
-</h2>
-
-
-<div class="filters">
-
-
-<div class="field">
-
-<label>
-Fecha desde
-</label>
-
-<input
-type="date"
-id="fechaDesde"
->
-
-</div>
-
-
-<div class="field">
-
-<label>
-Fecha hasta
-</label>
-
-<input
-type="date"
-id="fechaHasta"
->
-
-</div>
-
-
-<div class="field">
-
-<label>
-Molino
-</label>
-
-<select
-id="filtroMolino"
->
-
-<option value="">
-Todos los molinos
-</option>
-
-</select>
-
-</div>
-
-
-<div class="field">
-
-<label>
-Supervisor
-</label>
-
-<select
-id="filtroSupervisor"
->
-
-<option value="">
-Todos los supervisores
-</option>
-
-</select>
-
-</div>
-
-
-<div class="field">
-
-<label>
-Hallazgo
-</label>
-
-<select
-id="filtroHallazgo"
->
-
-<option value="">
-Todos los hallazgos
-</option>
-
-<option value="Spec incorrecta">
-Spec incorrecta
-</option>
-
-<option value="Falta de Spec">
-Falta de Spec
-</option>
-
-<option value="Sin etiqueta de molino">
-Sin etiqueta de molino
-</option>
-
-<option value="Error en Expected">
-Error en Expected
-</option>
-
-<option value="Error en Actual">
-Error en Actual
-</option>
-
-<option value="Material sin registro (Expected)">
-Material sin registro (Expected)
-</option>
-
-</select>
-
-</div>
-
-
-<div class="field">
-
-<label>
-Status
-</label>
-
-<select
-id="filtroStatus"
->
-
-<option value="">
-Todos
-</option>
-
-<option value="Liberado">
-Liberado
-</option>
-
-<option value="Bloqueado">
-Bloqueado
-</option>
-
-</select>
-
-</div>
-
-
-<div class="field">
-
-<label>
-Responsabilidad
-</label>
-
-<select
-id="filtroResponsabilidad"
->
-
-<option value="">
-Todas
-</option>
-
-<option value="Molino">
-Molino
-</option>
-
-<option value="Propio">
-Propio
-</option>
-
-</select>
-
-</div>
-
-
-</div>
-
-
-<br>
-
-
-<div class="actions">
-
-<button
-type="button"
-class="btn-secondary"
-id="limpiarFiltros"
->
-LIMPIAR FILTROS
-</button>
-
-
-<button
-type="button"
-class="btn-secondary"
-id="actualizarDatos"
->
-ACTUALIZAR DATOS
-</button>
-
-</div>
-
-</div>
-
-
-<!-- =====================================================
-     DASHBOARD
-===================================================== -->
-
-<div class="dashboard-grid">
-
-
-<div class="chart-card">
-
-<h3>
-Hallazgos por Molino
-</h3>
-
-<div
-id="graficaMolino"
-class="chart-area"
-></div>
-
-</div>
-
-
-<div class="chart-card">
-
-<h3>
-Pareto de Hallazgos
-</h3>
-
-<div
-id="graficaPareto"
-class="chart-area"
-></div>
-
-</div>
-
-
-<div class="chart-card">
-
-<h3>
-Distribución por Hallazgo
-</h3>
-
-<div
-id="graficaPie"
-class="chart-area"
-></div>
-
-</div>
-
-
-<div class="chart-card">
-
-<h3>
-Tendencia Mensual
-</h3>
-
-<div
-id="graficaLinea"
-class="line-chart"
-></div>
-
-</div>
-
-
-<div class="chart-card">
-
-<h3>
-Liberados vs Bloqueados
-</h3>
-
-<div
-id="graficaStatus"
-class="chart-area"
-></div>
-
-</div>
-
-
-<div class="chart-card">
-
-<h3>
-Responsabilidad · Molino vs Propio
-</h3>
-
-<div
-id="graficaResponsabilidad"
-class="chart-area"
-></div>
-
-</div>
-
-
-<div class="chart-card">
-
-<h3>
-Hallazgos por SPEC
-</h3>
-
-<div
-id="graficaSpec"
-class="chart-area"
-></div>
-
-</div>
-
-
-<div class="chart-card">
-
-<h3>
-Resumen actual
-</h3>
-
-<div
-id="resumen"
-></div>
-
-</div>
-
-
-</div>
-
-
-<!-- =====================================================
-     TABLA
-===================================================== -->
-
-<div class="card">
-
-<h2>
-Registros capturados
-</h2>
-
-
-<div class="table-wrapper">
-
-<table>
-
-<thead>
-
-<tr>
-
-<th>
-Fecha
-</th>
-
-<th>
-PACKING
-</th>
-
-<th>
-SPEC
-</th>
-
-<th>
-ESPESOR
-</th>
-
-<th>
-ANCHO
-</th>
-
-<th>
-MOLINO
-</th>
-
-<th>
-SUPERVISOR
-</th>
-
-<th>
-HALLAZGO
-</th>
-
-<th>
-STATUS
-</th>
-
-<th>
-RESPONSABILIDAD
-</th>
-
-<th>
-ACCIÓN
-</th>
-
-</tr>
-
-</thead>
-
-
-<tbody
-id="tablaRegistros"
-></tbody>
-
-
-</table>
-
-</div>
-
-</div>
-
-
-</div>
-
-
-<!-- =====================================================
-     MODAL LOGIN
-===================================================== -->
-
-<div
-id="loginModal"
-class="modal"
->
-
-<div class="modal-box">
-
-<h3>
-🔐 Acceso de administrador
-</h3>
-
-<p>
-Para eliminar registros necesitas iniciar sesión.
-</p>
-
-
-<div class="field">
-
-<label>
-Correo
-</label>
-
-<input
-type="email"
-id="adminEmail"
-placeholder="Correo del administrador"
->
-
-</div>
-
-
-<br>
-
-
-<div class="field">
-
-<label>
-Contraseña
-</label>
-
-<input
-type="password"
-id="adminPassword"
-placeholder="Contraseña"
->
-
-</div>
-
-
-<div
-id="loginMessage"
-class="message"
-></div>
-
-
-<div class="modal-actions">
-
-<button
-type="button"
-class="btn-secondary"
-id="cancelLogin"
->
-CANCELAR
-</button>
-
-
-<button
-type="button"
-class="btn-primary"
-id="loginButton"
->
-ENTRAR
-</button>
-
-</div>
-
-</div>
-
-</div>
-
-
-<!-- =====================================================
-     MODAL CONFIRMAR ELIMINACION
-===================================================== -->
-
-<div
-id="deleteModal"
-class="modal"
->
-
-<div class="modal-box">
-
-<h3>
-⚠️ Eliminar registro
-</h3>
-
-<div class="delete-warning">
-
-Esta acción eliminará permanentemente el hallazgo de la base de datos.
-
-</div>
-
-
-<div id="deleteInfo"></div>
-
-
-<div
-id="deleteMessage"
-class="message"
-></div>
-
-
-<div class="modal-actions">
-
-<button
-type="button"
-class="btn-secondary"
-id="cancelDelete"
->
-CANCELAR
-</button>
-
-
-<button
-type="button"
-class="btn-danger"
-id="confirmDelete"
->
-ELIMINAR
-</button>
-
-</div>
-
-</div>
-
-</div>
-
-
-<script>
-
-/* =====================================================
-   SUPABASE
-===================================================== */
-
-const SUPABASE_URL =
-"https://ubmiqpbaauobzxlmiowv.supabase.co";
-
-const SUPABASE_KEY =
-"sb_publishable_ZQM76cUACqsmd8gk9wUPAQ_1u9G9w9I";
-
-
-const supabaseClient =
-supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_KEY
-);
-
-
-/* =====================================================
-   VARIABLES
-===================================================== */
-
-let registros = [];
-
-let registroAEliminar = null;
-
-let canalRealtime = null;
-
-
-/* =====================================================
-   MENSAJES
-===================================================== */
-
-function mostrarMensaje(
-    texto,
-    tipo
-){
-
-    const elemento =
-        document.getElementById(
-            "message"
-        );
-
-    elemento.textContent =
-        texto;
-
-    elemento.className =
-        "message " + tipo;
-
-    setTimeout(
-        function(){
-
-            elemento.textContent = "";
-
-        },
-        5000
-    );
-
-}
-
-
-/* =====================================================
-   ESCAPAR TEXTO
-===================================================== */
-
-function escapar(
-    texto
-){
-
-    return String(
-        texto ?? ""
-    )
-    .replaceAll("&","&amp;")
-    .replaceAll("<","&lt;")
-    .replaceAll(">","&gt;")
-    .replaceAll('"',"&quot;")
-    .replaceAll("'","&#039;");
-
-}
-
-
-/* =====================================================
-   CARGAR DATOS
-===================================================== */
-
-async function cargarDatos(){
-
-    const status =
-        document.getElementById(
-            "connectionStatus"
-        );
-
-
-    status.textContent =
-        "Consultando datos...";
-
-
-    const resultado =
-        await supabaseClient
-
-        .from("hallazgos_mc")
-
-        .select("*")
-
-        .order(
-            "fecha",
-            {
-                ascending:false
-            }
-        );
-
-
-    if(
-        resultado.error
-    ){
-
-        console.error(
-            resultado.error
-        );
-
-        status.textContent =
-            "Error de conexión con Supabase.";
-
-        status.className =
-            "status status-error";
-
-        return;
-
-    }
-
-
-    registros =
-        resultado.data || [];
-
-
-    status.textContent =
-        "● Conectado · Datos actualizados";
-
-    status.className =
-        "status status-ok";
-
-
-    actualizarFiltros();
-
-    actualizarDashboard();
-
-}
-
-
-/* =====================================================
-   REGISTRAR
-===================================================== */
-
-document
-.getElementById(
-    "registroForm"
-)
-.addEventListener(
-    "submit",
-    async function(event){
-
-        event.preventDefault();
-
-
-        const packing =
-            document
-            .getElementById("packing")
-            .value
-            .trim();
-
-
-        if(
-            !/^\d{15}$/.test(
-                packing
-            )
-        ){
-
-            mostrarMensaje(
-                "El PACKING debe contener exactamente 15 dígitos.",
-                "error"
-            );
-
-            return;
-
-        }
-
-
-        const registro = {
-
-            packing:packing,
-
-            spec:
-                document
-                .getElementById("spec")
-                .value
-                .trim(),
-
-            espesor:
-                document
-                .getElementById("espesor")
-                .value
-                .trim(),
-
-            ancho:
-                document
-                .getElementById("ancho")
-                .value
-                .trim(),
-
-            molino:
-                document
-                .getElementById("molino")
-                .value
-                .trim(),
-
-            supervisor:
-                document
-                .getElementById("supervisor")
-                .value
-                .trim(),
-
-            hallazgo:
-                document
-                .getElementById("hallazgo")
-                .value,
-
-            status:
-                document
-                .getElementById("status")
-                .value,
-
-            responsabilidad:
-                document
-                .getElementById("responsabilidad")
-                .value
-
-        };
-
-
-        const boton =
-            document.getElementById(
-                "btnRegistrar"
-            );
-
-
-        boton.disabled = true;
-
-        boton.textContent =
-            "REGISTRANDO...";
-
-
-        const resultado =
-            await supabaseClient
-
-            .from("hallazgos_mc")
-
-            .insert([
-                registro
-            ])
-
-            .select();
-
-
-        boton.disabled = false;
-
-        boton.textContent =
-            "REGISTRAR HALLAZGO";
-
-
-        if(
-            resultado.error
-        ){
-
-            console.error(
-                resultado.error
-            );
-
-
-            if(
-                resultado.error.code ===
-                "23505"
-            ){
-
-                mostrarMensaje(
-                    "⚠ Ese PACKING ya está registrado.",
-                    "error"
-                );
-
-            }
-            else{
-
-                mostrarMensaje(
-                    "Error al registrar: " +
-                    resultado.error.message,
-                    "error"
-                );
-
-            }
-
-            return;
-
-        }
-
-
-        document
-        .getElementById(
-            "registroForm"
-        )
-        .reset();
-
-
-        mostrarMensaje(
-            "✓ Hallazgo registrado correctamente.",
-            "success"
-        );
-
-
-        await cargarDatos();
-
-    }
-);
-
-
-/* =====================================================
-   PACKING
-===================================================== */
-
-document
-.getElementById(
-    "packing"
-)
-.addEventListener(
-    "input",
-    function(){
-
-        this.value =
-            this.value
-            .replace(/\D/g,"")
-            .slice(0,15);
-
-    }
-);
-
-
-/* =====================================================
-   FILTROS
-===================================================== */
-
-function actualizarFiltros(){
-
-    const molinoSelect =
-        document.getElementById(
-            "filtroMolino"
-        );
-
-
-    const supervisorSelect =
-        document.getElementById(
-            "filtroSupervisor"
-        );
-
-
-    const molinoAnterior =
-        molinoSelect.value;
-
-
-    const supervisorAnterior =
-        supervisorSelect.value;
-
-
-    const molinos =
-        [
-            ...new Set(
-                registros
-                .map(
-                    r => r.molino
-                )
-                .filter(Boolean)
-            )
-        ]
-        .sort();
-
-
-    const supervisores =
-        [
-            ...new Set(
-                registros
-                .map(
-                    r => r.supervisor
-                )
-                .filter(Boolean)
-            )
-        ]
-        .sort();
-
-
-    molinoSelect.innerHTML =
-        '<option value="">Todos los molinos</option>';
-
-
-    molinos.forEach(
-        function(molino){
-
-            const option =
-                document.createElement(
-                    "option"
-                );
-
-            option.value =
-                molino;
-
-            option.textContent =
-                molino;
-
-            molinoSelect.appendChild(
-                option
-            );
-
-        }
-    );
-
-
-    supervisorSelect.innerHTML =
-        '<option value="">Todos los supervisores</option>';
-
-
-    supervisores.forEach(
-        function(supervisor){
-
-            const option =
-                document.createElement(
-                    "option"
-                );
-
-            option.value =
-                supervisor;
-
-            option.textContent =
-                supervisor;
-
-            supervisorSelect.appendChild(
-                option
-            );
-
-        }
-    );
-
-
-    molinoSelect.value =
-        molinoAnterior;
-
-
-    supervisorSelect.value =
-        supervisorAnterior;
-
-}
-
-
-/* =====================================================
-   FILTRAR
-===================================================== */
-
-function obtenerFiltrados(){
-
-    const molino =
-        document.getElementById(
-            "filtroMolino"
-        ).value;
-
-
-    const supervisor =
-        document.getElementById(
-            "filtroSupervisor"
-        ).value;
-
-
-    const hallazgo =
-        document.getElementById(
-            "filtroHallazgo"
-        ).value;
-
-
-    const status =
-        document.getElementById(
-            "filtroStatus"
-        ).value;
-
-
-    const responsabilidad =
-        document.getElementById(
-            "filtroResponsabilidad"
-        ).value;
-
-
-    const fechaDesde =
-        document.getElementById(
-            "fechaDesde"
-        ).value;
-
-
-    const fechaHasta =
-        document.getElementById(
-            "fechaHasta"
-        ).value;
-
-
-    return registros.filter(
-        function(r){
-
-            const fecha =
-                r.fecha
-                ? r.fecha.substring(
-                    0,
-                    10
-                )
-                : "";
-
-
-            return (
-
-                (!molino ||
-                    r.molino === molino)
-
-                &&
-
-                (!supervisor ||
-                    r.supervisor === supervisor)
-
-                &&
-
-                (!hallazgo ||
-                    r.hallazgo === hallazgo)
-
-                &&
-
-                (!status ||
-                    r.status === status)
-
-                &&
-
-                (!responsabilidad ||
-                    r.responsabilidad === responsabilidad)
-
-                &&
-
-                (!fechaDesde ||
-                    fecha >= fechaDesde)
-
-                &&
-
-                (!fechaHasta ||
-                    fecha <= fechaHasta)
-
-            );
-
-        }
-    );
-
-}
-
-
-/* =====================================================
-   DASHBOARD
-===================================================== */
-
-function actualizarDashboard(){
-
-    const datos =
-        obtenerFiltrados();
-
-
-    actualizarIndicadores(
-        datos
-    );
-
-
-    mostrarTabla(
-        datos
-    );
-
-
-    graficaMolinos(
-        datos
-    );
-
-
-    graficaPareto(
-        datos
-    );
-
-
-    graficaPie(
-        datos
-    );
-
-
-    graficaTendencia(
-        datos
-    );
-
-
-    graficaStatus(
-        datos
-    );
-
-
-    graficaResponsabilidad(
-        datos
-    );
-
-
-    graficaSpec(
-        datos
-    );
-
-
-    mostrarResumen(
-        datos
-    );
-
-}
-
-
-/* =====================================================
-   INDICADORES
-===================================================== */
-
-function actualizarIndicadores(
-    datos
-){
-
-    const total =
-        datos.length;
-
-
-    const bloqueados =
-        datos.filter(
-            r =>
-                r.status ===
-                "Bloqueado"
-        ).length;
-
-
-    const propio =
-        datos.filter(
-            r =>
-                r.responsabilidad ===
-                "Propio"
-        ).length;
-
-
-    const molino =
-        datos.filter(
-            r =>
-                r.responsabilidad ===
-                "Molino"
-        ).length;
-
-
-    const porcentajeBloqueados =
-        total > 0
-        ? (
-            bloqueados /
-            total *
-            100
-        )
-        : 0;
-
-
-    const porcentajePropio =
-        total > 0
-        ? (
-            propio /
-            total *
-            100
-        )
-        : 0;
-
-
-    const porcentajeMolino =
-        total > 0
-        ? (
-            molino /
-            total *
-            100
-        )
-        : 0;
-
-
-    document.getElementById(
-        "totalHallazgos"
-    ).textContent =
-        total;
-
-
-    document.getElementById(
-        "porcentajeBloqueados"
-    ).textContent =
-        porcentajeBloqueados
-        .toFixed(1) +
-        "%";
-
-
-    document.getElementById(
-        "cantidadPropio"
-    ).textContent =
-        propio;
-
-
-    document.getElementById(
-        "porcentajePropio"
-    ).textContent =
-        porcentajePropio
-        .toFixed(1) +
-        "%";
-
-
-    document.getElementById(
-        "cantidadMolino"
-    ).textContent =
-        molino;
-
-
-    document.getElementById(
-        "porcentajeMolino"
-    ).textContent =
-        porcentajeMolino
-        .toFixed(1) +
-        "%";
-
-}
-
-
-/* =====================================================
-   TABLA
-===================================================== */
-
-function mostrarTabla(
-    datos
-){
-
-    const tabla =
-        document.getElementById(
-            "tablaRegistros"
-        );
-
-
-    if(
-        datos.length === 0
-    ){
-
-        tabla.innerHTML = `
-
-        <tr>
-
-            <td
-                colspan="11"
-                class="empty"
-            >
-                No hay registros.
-            </td>
-
-        </tr>
-
-        `;
-
-        return;
-
-    }
-
-
-    tabla.innerHTML =
-        datos
-        .map(
-            function(r){
-
-                const fecha =
-                    r.fecha
-                    ? new Date(
-                        r.fecha
-                    ).toLocaleString(
-                        "es-MX",
-                        {
-                            day:"2-digit",
-                            month:"2-digit",
-                            year:"numeric",
-                            hour:"2-digit",
-                            minute:"2-digit"
-                        }
-                    )
-                    : "";
-
-
-                const statusClass =
-                    r.status ===
-                    "Bloqueado"
-                    ? "badge-bloqueado"
-                    : "badge-liberado";
-
-
-                const responsabilidadClass =
-                    r.responsabilidad ===
-                    "Molino"
-                    ? "badge-molino"
-                    : "badge-propio";
-
-
-                return `
-
-                <tr>
-
-                    <td>
-                        ${escapar(fecha)}
-                    </td>
-
-                    <td>
-                        <strong>
-                            ${escapar(r.packing)}
-                        </strong>
-                    </td>
-
-                    <td>
-                        ${escapar(r.spec)}
-                    </td>
-
-                    <td>
-                        ${escapar(r.espesor)}
-                    </td>
-
-                    <td>
-                        ${escapar(r.ancho)}
-                    </td>
-
-                    <td>
-                        ${escapar(r.molino)}
-                    </td>
-
-                    <td>
-                        ${escapar(r.supervisor)}
-                    </td>
-
-                    <td>
-                        ${escapar(r.hallazgo)}
-                    </td>
-
-                    <td>
-
-                        <span
-                            class="badge ${statusClass}"
-                        >
-                            ${escapar(r.status)}
-                        </span>
-
-                    </td>
-
-                    <td>
-
-                        <span
-                            class="badge ${responsabilidadClass}"
-                        >
-                            ${escapar(r.responsabilidad)}
-                        </span>
-
-                    </td>
-
-                    <td>
-
-                        <button
-                            class="btn-danger"
-                            onclick="abrirEliminar('${r.id}')"
-                        >
-                            🗑️
-                        </button>
-
-                    </td>
-
-                </tr>
-
-                `;
-
-            }
-        )
-        .join("");
-
-}
-
-
-/* =====================================================
-   GRAFICA GENERICA DE BARRAS
-===================================================== */
-
-function generarBarras(
-    contenedorId,
-    conteo,
-    claseBarra = ""
-){
-
-    const contenedor =
-        document.getElementById(
-            contenedorId
-        );
-
-
-    const ordenado =
-        Object.entries(
-            conteo
-        )
-        .sort(
-            (a,b) =>
-                b[1] -
-                a[1]
-        );
-
-
-    if(
-        ordenado.length === 0
-    ){
-
-        contenedor.innerHTML =
-            '<div class="empty">Sin datos.</div>';
-
-        return;
-
-    }
-
-
-    const maximo =
-        Math.max(
-            ...ordenado
-            .map(
-                x => x[1]
-            )
-        );
-
-
-    contenedor.innerHTML =
-        ordenado
-        .map(
-            function(item){
-
-                const porcentaje =
-                    (
-                        item[1] /
-                        maximo
-                    ) *
-                    100;
-
-
-                return `
-
-                <div class="chart-row">
-
-                    <div class="chart-label">
-
-                        <span>
-                            ${escapar(item[0])}
-                        </span>
-
-                        <span>
-                            ${item[1]}
-                        </span>
-
+    <div class="header">
+        <h1>Bitácora de Hallazgos de Materia Prima</h1>
+        <p>Master Coil · Recepción y seguimiento de hallazgos</p>
+        <div class="connection" id="connectionStatus">
+            ● Conectando...
+        </div>
+    </div>
+
+    <!-- INDICADORES -->
+    <div class="cards">
+
+        <div class="card">
+            <div class="card-title">Total de hallazgos</div>
+            <div class="card-value" id="totalHallazgos">0</div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">% de bloqueados</div>
+            <div class="card-value" id="porcentajeBloqueados">0%</div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">Responsabilidad propia</div>
+            <div class="card-value" id="totalPropio">0</div>
+            <div class="card-percent" id="porcentajePropio">0%</div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">Responsabilidad Molino</div>
+            <div class="card-value" id="totalMolino">0</div>
+            <div class="card-percent" id="porcentajeMolino">0%</div>
+        </div>
+
+    </div>
+
+    <!-- REGISTRO -->
+    <div class="section">
+
+        <h2>Registrar Hallazgo</h2>
+
+        <form id="hallazgoForm">
+
+            <div class="form-grid">
+
+                <div class="field full">
+                    <label>PACKING * · exactamente 15 dígitos</label>
+                    <input
+                        type="text"
+                        id="packing"
+                        maxlength="15"
+                        inputmode="numeric"
+                        placeholder="Ej. 123456789012345"
+                        required
+                    >
+                    <div class="help">
+                        Debe contener exactamente 15 números.
                     </div>
-
-                    <div class="bar-container">
-
-                        <div
-                            class="bar ${claseBarra}"
-                            style="width:${porcentaje}%"
-                        ></div>
-
-                    </div>
-
                 </div>
 
-                `;
-
-            }
-        )
-        .join("");
-
-}
-
-
-/* =====================================================
-   MOLINOS
-===================================================== */
-
-function graficaMolinos(
-    datos
-){
-
-    const conteo = {};
-
-
-    datos.forEach(
-        function(r){
-
-            conteo[r.molino] =
-                (
-                    conteo[r.molino]
-                    || 0
-                )
-                + 1;
-
-        }
-    );
-
-
-    generarBarras(
-        "graficaMolino",
-        conteo
-    );
-
-}
-
-
-/* =====================================================
-   STATUS
-===================================================== */
-
-function graficaStatus(
-    datos
-){
-
-    const conteo = {
-
-        "Liberado":0,
-
-        "Bloqueado":0
-
-    };
-
-
-    datos.forEach(
-        function(r){
-
-            if(
-                r.status ===
-                "Liberado"
-            ){
-
-                conteo.Liberado++;
-
-            }
-
-
-            if(
-                r.status ===
-                "Bloqueado"
-            ){
-
-                conteo.Bloqueado++;
-
-            }
-
-        }
-    );
-
-
-    const contenedor =
-        document.getElementById(
-            "graficaStatus"
-        );
-
-
-    const total =
-        datos.length;
-
-
-    if(
-        total === 0
-    ){
-
-        contenedor.innerHTML =
-            '<div class="empty">Sin datos.</div>';
-
-        return;
-
-    }
-
-
-    contenedor.innerHTML = `
-
-        <div class="chart-row">
-
-            <div class="chart-label">
-
-                <span>
-                    Liberado
-                </span>
-
-                <span>
-                    ${conteo.Liberado}
-                </span>
-
-            </div>
-
-            <div class="bar-container">
-
-                <div
-                    class="bar bar-liberado"
-                    style="
-                        width:
-                        ${
-                            conteo.Liberado /
-                            total *
-                            100
-                        }%
-                    "
-                ></div>
-
-            </div>
-
-        </div>
-
-
-        <div class="chart-row">
-
-            <div class="chart-label">
-
-                <span>
-                    Bloqueado
-                </span>
-
-                <span>
-                    ${conteo.Bloqueado}
-                </span>
-
-            </div>
-
-            <div class="bar-container">
-
-                <div
-                    class="bar bar-bloqueado"
-                    style="
-                        width:
-                        ${
-                            conteo.Bloqueado /
-                            total *
-                            100
-                        }%
-                    "
-                ></div>
-
-            </div>
-
-        </div>
-
-    `;
-
-}
-
-
-/* =====================================================
-   RESPONSABILIDAD
-===================================================== */
-
-function graficaResponsabilidad(
-    datos
-){
-
-    const conteo = {
-
-        "Molino":0,
-
-        "Propio":0
-
-    };
-
-
-    datos.forEach(
-        function(r){
-
-            if(
-                r.responsabilidad ===
-                "Molino"
-            ){
-
-                conteo.Molino++;
-
-            }
-
-
-            if(
-                r.responsabilidad ===
-                "Propio"
-            ){
-
-                conteo.Propio++;
-
-            }
-
-        }
-    );
-
-
-    const contenedor =
-        document.getElementById(
-            "graficaResponsabilidad"
-        );
-
-
-    const total =
-        datos.length;
-
-
-    if(
-        total === 0
-    ){
-
-        contenedor.innerHTML =
-            '<div class="empty">Sin datos.</div>';
-
-        return;
-
-    }
-
-
-    contenedor.innerHTML = `
-
-        <div class="chart-row">
-
-            <div class="chart-label">
-
-                <span>
-                    Molino
-                </span>
-
-                <span>
-                    ${conteo.Molino}
-                    ·
-                    ${
-                        (
-                            conteo.Molino /
-                            total *
-                            100
-                        ).toFixed(1)
-                    }%
-                </span>
-
-            </div>
-
-            <div class="bar-container">
-
-                <div
-                    class="bar bar-molino"
-                    style="
-                        width:
-                        ${
-                            conteo.Molino /
-                            total *
-                            100
-                        }%
-                    "
-                ></div>
-
-            </div>
-
-        </div>
-
-
-        <div class="chart-row">
-
-            <div class="chart-label">
-
-                <span>
-                    Propio
-                </span>
-
-                <span>
-                    ${conteo.Propio}
-                    ·
-                    ${
-                        (
-                            conteo.Propio /
-                            total *
-                            100
-                        ).toFixed(1)
-                    }%
-                </span>
-
-            </div>
-
-            <div class="bar-container">
-
-                <div
-                    class="bar bar-propio"
-                    style="
-                        width:
-                        ${
-                            conteo.Propio /
-                            total *
-                            100
-                        }%
-                    "
-                ></div>
-
-            </div>
-
-        </div>
-
-    `;
-
-}
-
-
-/* =====================================================
-   SPEC
-===================================================== */
-
-function graficaSpec(
-    datos
-){
-
-    const conteo = {};
-
-
-    datos.forEach(
-        function(r){
-
-            conteo[r.spec] =
-                (
-                    conteo[r.spec]
-                    || 0
-                )
-                + 1;
-
-        }
-    );
-
-
-    generarBarras(
-        "graficaSpec",
-        conteo
-    );
-
-}
-
-
-/* =====================================================
-   PARETO
-===================================================== */
-
-function graficaPareto(
-    datos
-){
-
-    const contenedor =
-        document.getElementById(
-            "graficaPareto"
-        );
-
-
-    const conteo = {};
-
-
-    datos.forEach(
-        function(r){
-
-            conteo[r.hallazgo] =
-                (
-                    conteo[r.hallazgo]
-                    || 0
-                )
-                + 1;
-
-        }
-    );
-
-
-    const ordenado =
-        Object.entries(
-            conteo
-        )
-        .sort(
-            (a,b) =>
-                b[1] -
-                a[1]
-        );
-
-
-    if(
-        ordenado.length === 0
-    ){
-
-        contenedor.innerHTML =
-            '<div class="empty">Sin datos.</div>';
-
-        return;
-
-    }
-
-
-    const total =
-        datos.length;
-
-
-    let acumulado = 0;
-
-
-    contenedor.innerHTML =
-        ordenado
-        .map(
-            function(item){
-
-                const porcentaje =
-                    item[1] /
-                    total *
-                    100;
-
-
-                acumulado +=
-                    porcentaje;
-
-
-                return `
-
-                <div class="pareto-item">
-
-                    <div class="pareto-label">
-
-                        <span>
-                            ${escapar(item[0])}
-                        </span>
-
-                        <span>
-                            ${item[1]}
-                        </span>
-
-                    </div>
-
-                    <div class="pareto-bar-container">
-
-                        <div
-                            class="pareto-bar"
-                            style="
-                                width:
-                                ${porcentaje}%
-                            "
-                        ></div>
-
-                    </div>
-
-                    <div class="pareto-percent">
-
-                        ${porcentaje.toFixed(1)}%
-                        · acumulado
-                        ${acumulado.toFixed(1)}%
-
-                    </div>
-
+                <div class="field">
+                    <label>SPEC *</label>
+                    <input
+                        type="text"
+                        id="spec"
+                        placeholder="Ej. SP270C"
+                        required
+                    >
                 </div>
 
-                `;
+                <div class="field">
+                    <label>ESPESOR *</label>
+                    <input
+                        type="text"
+                        id="espesor"
+                        placeholder="Ej. 1.20"
+                        required
+                    >
+                </div>
 
-            }
-        )
-        .join("");
+                <div class="field">
+                    <label>ANCHO *</label>
+                    <input
+                        type="text"
+                        id="ancho"
+                        placeholder="Ej. 1250"
+                        required
+                    >
+                </div>
 
-}
+                <div class="field">
+                    <label>MOLINO *</label>
+                    <input
+                        type="text"
+                        id="molino"
+                        placeholder="Ej. Molino A"
+                        required
+                    >
+                </div>
 
+                <div class="field">
+                    <label>SUPERVISOR *</label>
+                    <input
+                        type="text"
+                        id="supervisor"
+                        placeholder="Nombre del supervisor"
+                        required
+                    >
+                </div>
 
-/* =====================================================
-   PIE
-===================================================== */
+                <div class="field">
+                    <label>HALLAZGO *</label>
+                    <select id="hallazgo" required>
+                        <option value="">Seleccionar hallazgo...</option>
+                        <option value="Spec incorrecta">Spec incorrecta</option>
+                        <option value="Falta de spec">Falta de spec</option>
+                        <option value="Sin etiqueta de molino">Sin etiqueta de molino</option>
+                        <option value="Error en expected">Error en expected</option>
+                        <option value="Error en actual">Error en actual</option>
+                        <option value="Material sin registro (expected)">Material sin registro (expected)</option>
+                    </select>
+                </div>
 
-function graficaPie(
-    datos
-){
+                <div class="field">
+                    <label>STATUS *</label>
+                    <select id="status" required>
+                        <option value="">Seleccionar status...</option>
+                        <option value="Liberado">Liberado</option>
+                        <option value="Bloqueado">Bloqueado</option>
+                    </select>
+                </div>
 
-    const contenedor =
-        document.getElementById(
-            "graficaPie"
-        );
+                <div class="field">
+                    <label>RESPONSABILIDAD *</label>
+                    <select id="responsabilidad" required>
+                        <option value="">Seleccionar responsabilidad...</option>
+                        <option value="Molino">Molino</option>
+                        <option value="Propio">Propio</option>
+                    </select>
+                </div>
 
-
-    const conteo = {};
-
-
-    datos.forEach(
-        function(r){
-
-            conteo[r.hallazgo] =
-                (
-                    conteo[r.hallazgo]
-                    || 0
-                )
-                + 1;
-
-        }
-    );
-
-
-    const items =
-        Object.entries(
-            conteo
-        );
-
-
-    if(
-        items.length === 0
-    ){
-
-        contenedor.innerHTML =
-            '<div class="empty">Sin datos.</div>';
-
-        return;
-
-    }
-
-
-    const total =
-        datos.length;
-
-
-    const colores = [
-
-        "#0f2742",
-        "#506d89",
-        "#7f9db8",
-        "#aebdca",
-        "#687784",
-        "#9aabb8"
-
-    ];
-
-
-    let acumulado = 0;
-
-
-    const segmentos =
-        items.map(
-            function(item,index){
-
-                const porcentaje =
-                    item[1] /
-                    total *
-                    100;
-
-
-                const inicio =
-                    acumulado;
-
-
-                acumulado +=
-                    porcentaje;
-
-
-                return (
-                    colores[
-                        index %
-                        colores.length
-                    ]
-                    +
-                    " "
-                    +
-                    inicio
-                    +
-                    "% "
-                    +
-                    acumulado
-                    +
-                    "%"
-                );
-
-            }
-        );
-
-
-    let leyenda = "";
-
-
-    items.forEach(
-        function(item,index){
-
-            const porcentaje =
-                item[1] /
-                total *
-                100;
-
-
-            leyenda += `
-
-            <div class="legend-item">
-
-                <span
-                    class="legend-color"
-                    style="
-                        background:
-                        ${
-                            colores[
-                                index %
-                                colores.length
-                            ]
-                        }
-                    "
-                ></span>
-
-                <span>
-
-                    ${escapar(item[0])}
-
-                    ·
-
-                    ${item[1]}
-
-                    ·
-
-                    ${porcentaje.toFixed(1)}%
-
-                </span>
+                <div class="field full">
+                    <button type="submit" class="btn-primary">
+                        REGISTRAR HALLAZGO
+                    </button>
+                </div>
 
             </div>
 
-            `;
+            <div class="status-message" id="formMessage"></div>
 
-        }
-    );
+        </form>
 
+    </div>
 
-    contenedor.innerHTML = `
+    <!-- FILTROS -->
+    <div class="section">
 
-        <div class="pie-container">
+        <h2>Filtros del Dashboard</h2>
 
-            <div
-                class="pie"
-                style="
-                    background:
-                    conic-gradient(
-                        ${segmentos.join(",")}
-                    );
-                "
-            ></div>
+        <div class="filters">
 
-            <div class="legend">
+            <div>
+                <label>Fecha desde</label>
+                <input type="date" id="fechaDesde">
+            </div>
 
-                ${leyenda}
+            <div>
+                <label>Fecha hasta</label>
+                <input type="date" id="fechaHasta">
+            </div>
 
+            <div>
+                <label>Molino</label>
+                <select id="filtroMolino">
+                    <option value="">Todos</option>
+                </select>
+            </div>
+
+            <div>
+                <label>Status</label>
+                <select id="filtroStatus">
+                    <option value="">Todos</option>
+                    <option value="Liberado">Liberado</option>
+                    <option value="Bloqueado">Bloqueado</option>
+                </select>
+            </div>
+
+            <div>
+                <label>Responsabilidad</label>
+                <select id="filtroResponsabilidad">
+                    <option value="">Todas</option>
+                    <option value="Molino">Molino</option>
+                    <option value="Propio">Propio</option>
+                </select>
             </div>
 
         </div>
 
-    `;
+        <br>
 
-}
+        <button class="btn-secondary" onclick="limpiarFiltros()">
+            LIMPIAR FILTROS
+        </button>
 
+    </div>
 
-/* =====================================================
-   TENDENCIA
-===================================================== */
+    <!-- GRAFICAS -->
+    <div class="section">
 
-function graficaTendencia(
-    datos
-){
+        <h2>Gráficas</h2>
 
-    const contenedor =
-        document.getElementById(
-            "graficaLinea"
-        );
+        <div class="charts">
 
+            <div class="chart-box">
+                <h3>Hallazgos por tipo</h3>
+                <canvas id="chartHallazgos"></canvas>
+            </div>
 
-    const meses = {};
+            <div class="chart-box">
+                <h3>Hallazgos por Status</h3>
+                <canvas id="chartStatus"></canvas>
+            </div>
 
+            <div class="chart-box">
+                <h3>Hallazgos por Responsabilidad</h3>
+                <canvas id="chartResponsabilidad"></canvas>
+            </div>
 
-    datos.forEach(
-        function(r){
-
-            if(
-                !r.fecha
-            ){
-                return;
-            }
-
-
-            const fecha =
-                new Date(
-                    r.fecha
-                );
-
-
-            const clave =
-                fecha.getFullYear()
-                +
-                "-"
-                +
-                String(
-                    fecha.getMonth()+1
-                )
-                .padStart(
-                    2,
-                    "0"
-                );
-
-
-            meses[clave] =
-                (
-                    meses[clave]
-                    || 0
-                )
-                + 1;
-
-        }
-    );
-
-
-    const datosMes =
-        Object.entries(
-            meses
-        )
-        .sort(
-            (a,b) =>
-                a[0].localeCompare(
-                    b[0]
-                )
-        );
-
-
-    if(
-        datosMes.length === 0
-    ){
-
-        contenedor.innerHTML =
-            '<div class="empty">Sin datos.</div>';
-
-        return;
-
-    }
-
-
-    const ancho = 700;
-
-    const alto = 240;
-
-    const margen = 40;
-
-
-    const maximo =
-        Math.max(
-            ...datosMes
-            .map(
-                x => x[1]
-            )
-        );
-
-
-    const puntos =
-        datosMes.map(
-            function(item,index){
-
-                const x =
-                    datosMes.length === 1
-                    ?
-                    ancho/2
-                    :
-                    margen
-                    +
-                    (
-                        index /
-                        (
-                            datosMes.length-1
-                        )
-                    )
-                    *
-                    (
-                        ancho -
-                        margen*2
-                    );
-
-
-                const y =
-                    alto -
-                    margen
-                    -
-                    (
-                        item[1] /
-                        maximo
-                    )
-                    *
-                    (
-                        alto -
-                        margen*2
-                    );
-
-
-                return {
-
-                    x:x,
-
-                    y:y,
-
-                    valor:item[1],
-
-                    mes:item[0]
-
-                };
-
-            }
-        );
-
-
-    const polyline =
-        puntos
-        .map(
-            p =>
-                p.x
-                +
-                ","
-                +
-                p.y
-        )
-        .join(" ");
-
-
-    let svgPuntos = "";
-
-    let etiquetas = "";
-
-
-    puntos.forEach(
-        function(p){
-
-            svgPuntos += `
-
-            <circle
-                cx="${p.x}"
-                cy="${p.y}"
-                r="5"
-                fill="#0f2742"
-            />
-
-            `;
-
-
-            etiquetas += `
-
-            <text
-                x="${p.x}"
-                y="${p.y - 10}"
-                text-anchor="middle"
-                font-size="12"
-                fill="#1f2937"
-            >
-                ${p.valor}
-            </text>
-
-            <text
-                x="${p.x}"
-                y="${alto - 10}"
-                text-anchor="middle"
-                font-size="11"
-                fill="#667085"
-            >
-                ${p.mes}
-            </text>
-
-            `;
-
-        }
-    );
-
-
-    contenedor.innerHTML = `
-
-    <svg
-        viewBox="
-            0
-            0
-            ${ancho}
-            ${alto}
-        "
-        preserveAspectRatio="none"
-    >
-
-        <line
-            x1="${margen}"
-            y1="${alto-margen}"
-            x2="${ancho-margen}"
-            y2="${alto-margen}"
-            stroke="#ccd3da"
-        />
-
-        <polyline
-            points="${polyline}"
-            fill="none"
-            stroke="#0f2742"
-            stroke-width="3"
-        />
-
-        ${svgPuntos}
-
-        ${etiquetas}
-
-    </svg>
-
-    `;
-
-}
-
-
-/* =====================================================
-   RESUMEN
-===================================================== */
-
-function mostrarResumen(
-    datos
-){
-
-    const contenedor =
-        document.getElementById(
-            "resumen"
-        );
-
-
-    const bloqueados =
-        datos.filter(
-            r =>
-                r.status ===
-                "Bloqueado"
-        ).length;
-
-
-    const liberados =
-        datos.filter(
-            r =>
-                r.status ===
-                "Liberado"
-        ).length;
-
-
-    const propio =
-        datos.filter(
-            r =>
-                r.responsabilidad ===
-                "Propio"
-        ).length;
-
-
-    const molino =
-        datos.filter(
-            r =>
-                r.responsabilidad ===
-                "Molino"
-        ).length;
-
-
-    contenedor.innerHTML = `
-
-    <div style="
-        display:grid;
-        gap:12px;
-    ">
-
-        <div>
-
-            <strong>
-                Hallazgos:
-            </strong>
-
-            ${datos.length}
-
-        </div>
-
-
-        <div>
-
-            <strong>
-                Bloqueados:
-            </strong>
-
-            ${bloqueados}
-
-        </div>
-
-
-        <div>
-
-            <strong>
-                Liberados:
-            </strong>
-
-            ${liberados}
-
-        </div>
-
-
-        <div>
-
-            <strong>
-                Responsabilidad propia:
-            </strong>
-
-            ${propio}
-
-        </div>
-
-
-        <div>
-
-            <strong>
-                Responsabilidad Molino:
-            </strong>
-
-            ${molino}
+            <div class="chart-box">
+                <h3>Hallazgos por Molino</h3>
+                <canvas id="chartMolino"></canvas>
+            </div>
 
         </div>
 
     </div>
 
-    `;
+    <!-- REGISTROS -->
+    <div class="section">
+
+        <h2>Registros</h2>
+
+        <div class="login-status">
+
+            <div id="loginStatus">
+                🔒 Eliminación protegida
+            </div>
+
+            <button
+                class="btn-secondary btn-small"
+                id="loginButton"
+                onclick="abrirLogin()"
+            >
+                ACCESO ADMIN
+            </button>
+
+            <button
+                class="btn-secondary btn-small"
+                id="logoutButton"
+                onclick="cerrarSesion()"
+                style="display:none;"
+            >
+                CERRAR SESIÓN
+            </button>
+
+        </div>
+
+        <div class="table-container">
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Packing</th>
+                        <th>Spec</th>
+                        <th>Espesor</th>
+                        <th>Ancho</th>
+                        <th>Molino</th>
+                        <th>Supervisor</th>
+                        <th>Hallazgo</th>
+                        <th>Status</th>
+                        <th>Responsabilidad</th>
+                        <th>Acción</th>
+                    </tr>
+                </thead>
+
+                <tbody id="tablaRegistros">
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- MODAL LOGIN -->
+<div class="modal" id="loginModal">
+
+    <div class="modal-content">
+
+        <h2>Acceso para eliminar</h2>
+
+        <p>
+            Ingresa el usuario y contraseña autorizados.
+        </p>
+
+        <div class="field">
+            <label>Correo</label>
+            <input
+                type="email"
+                id="loginEmail"
+                placeholder="correo@ejemplo.com"
+            >
+        </div>
+
+        <br>
+
+        <div class="field">
+            <label>Contraseña</label>
+            <input
+                type="password"
+                id="loginPassword"
+                placeholder="Contraseña"
+            >
+        </div>
+
+        <div class="status-message" id="loginMessage"></div>
+
+        <div class="modal-buttons">
+
+            <button
+                class="btn-secondary"
+                onclick="cerrarLogin()"
+            >
+                CANCELAR
+            </button>
+
+            <button
+                class="btn-primary"
+                onclick="iniciarSesion()"
+            >
+                ENTRAR
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+const SUPABASE_URL =
+    "https://ubmiqpbaauobzxlmiowv.supabase.co";
+
+const SUPABASE_KEY =
+    "sb_publishable_ZQM76cUACqsmd8gk9wUPAQ_1u9G9w9I";
+
+const supabaseClient =
+    window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+    );
+
+let todosLosRegistros = [];
+
+let chartHallazgos = null;
+let chartStatus = null;
+let chartResponsabilidad = null;
+let chartMolino = null;
+
+
+/* ================================
+   INICIO
+================================ */
+
+document.addEventListener("DOMContentLoaded", async () => {
+
+    await cargarRegistros();
+
+    await comprobarSesion();
+
+    configurarEventos();
+
+    suscribirseTiempoReal();
+
+});
+
+
+/* ================================
+   EVENTOS
+================================ */
+
+function configurarEventos() {
+
+    document
+        .getElementById("hallazgoForm")
+        .addEventListener("submit", registrarHallazgo);
+
+    document
+        .getElementById("fechaDesde")
+        .addEventListener("change", aplicarFiltros);
+
+    document
+        .getElementById("fechaHasta")
+        .addEventListener("change", aplicarFiltros);
+
+    document
+        .getElementById("filtroMolino")
+        .addEventListener("change", aplicarFiltros);
+
+    document
+        .getElementById("filtroStatus")
+        .addEventListener("change", aplicarFiltros);
+
+    document
+        .getElementById("filtroResponsabilidad")
+        .addEventListener("change", aplicarFiltros);
+
+    document
+        .getElementById("packing")
+        .addEventListener("input", function() {
+
+            this.value =
+                this.value.replace(/\D/g, "").slice(0, 15);
+
+        });
 
 }
 
 
-/* =====================================================
-   EVENTOS DE FILTROS
-===================================================== */
+/* ================================
+   CARGAR DATOS
+================================ */
 
-[
-    "fechaDesde",
-    "fechaHasta",
-    "filtroMolino",
-    "filtroSupervisor",
-    "filtroHallazgo",
-    "filtroStatus",
-    "filtroResponsabilidad"
-]
-.forEach(
-    function(id){
+async function cargarRegistros() {
 
-        document
-        .getElementById(id)
-        .addEventListener(
-            "change",
-            actualizarDashboard
-        );
+    const { data, error } =
+        await supabaseClient
+            .from("hallazgos_mc")
+            .select("*")
+            .order("fecha", { ascending: false });
 
-    }
-);
+    if (error) {
 
+        console.error(error);
 
-/* =====================================================
-   LIMPIAR FILTROS
-===================================================== */
-
-document
-.getElementById(
-    "limpiarFiltros"
-)
-.addEventListener(
-    "click",
-    function(){
-
-        document.getElementById(
-            "fechaDesde"
-        ).value = "";
-
-
-        document.getElementById(
-            "fechaHasta"
-        ).value = "";
-
-
-        document.getElementById(
-            "filtroMolino"
-        ).value = "";
-
-
-        document.getElementById(
-            "filtroSupervisor"
-        ).value = "";
-
-
-        document.getElementById(
-            "filtroHallazgo"
-        ).value = "";
-
-
-        document.getElementById(
-            "filtroStatus"
-        ).value = "";
-
-
-        document.getElementById(
-            "filtroResponsabilidad"
-        ).value = "";
-
-
-        actualizarDashboard();
-
-    }
-);
-
-
-/* =====================================================
-   ACTUALIZAR
-===================================================== */
-
-document
-.getElementById(
-    "actualizarDatos"
-)
-.addEventListener(
-    "click",
-    cargarDatos
-);
-
-
-/* =====================================================
-   ABRIR ELIMINAR
-===================================================== */
-
-window.abrirEliminar =
-function(id){
-
-    registroAEliminar =
-        registros.find(
-            r =>
-                String(r.id) ===
-                String(id)
-        );
-
-
-    if(
-        !registroAEliminar
-    ){
+        document.getElementById("connectionStatus").innerText =
+            "● Error de conexión";
 
         return;
-
     }
 
+    todosLosRegistros = data || [];
 
-    document.getElementById(
-        "deleteInfo"
-    ).innerHTML = `
+    document.getElementById("connectionStatus").innerText =
+        "● Conectado · Datos actualizados";
 
-        <strong>
-            PACKING:
-        </strong>
+    actualizarMolinos();
 
-        ${escapar(
-            registroAEliminar.packing
-        )}
-
-        <br><br>
-
-        <strong>
-            Hallazgo:
-        </strong>
-
-        ${escapar(
-            registroAEliminar.hallazgo
-        )}
-
-    `;
+    aplicarFiltros();
+}
 
 
-    document.getElementById(
-        "deleteMessage"
-    ).textContent = "";
+/* ================================
+   REGISTRAR
+================================ */
 
+async function registrarHallazgo(event) {
 
-    document.getElementById(
-        "deleteModal"
-    ).style.display =
-        "flex";
+    event.preventDefault();
 
-};
+    const message =
+        document.getElementById("formMessage");
 
+    message.innerText = "";
 
-/* =====================================================
-   CANCELAR ELIMINAR
-===================================================== */
+    const packing =
+        document.getElementById("packing").value.trim();
 
-document
-.getElementById(
-    "cancelDelete"
-)
-.addEventListener(
-    "click",
-    function(){
+    if (!/^\d{15}$/.test(packing)) {
 
-        registroAEliminar =
-            null;
+        message.style.color = "#b42318";
+        message.innerText =
+            "El PACKING debe contener exactamente 15 números.";
 
-        document.getElementById(
-            "deleteModal"
-        ).style.display =
-            "none";
-
+        return;
     }
-);
+
+    const registro = {
+
+        packing: packing,
+
+        spec:
+            document.getElementById("spec").value.trim(),
+
+        espesor:
+            document.getElementById("espesor").value.trim(),
+
+        ancho:
+            document.getElementById("ancho").value.trim(),
+
+        molino:
+            document.getElementById("molino").value.trim(),
+
+        supervisor:
+            document.getElementById("supervisor").value.trim(),
+
+        hallazgo:
+            document.getElementById("hallazgo").value,
+
+        status:
+            document.getElementById("status").value,
+
+        responsabilidad:
+            document.getElementById("responsabilidad").value
+
+    };
 
 
-/* =====================================================
-   CANCELAR LOGIN
-===================================================== */
-
-document
-.getElementById(
-    "cancelLogin"
-)
-.addEventListener(
-    "click",
-    function(){
-
-        document.getElementById(
-            "loginModal"
-        ).style.display =
-            "none";
-
-    }
-);
-
-
-/* =====================================================
-   CONFIRMAR ELIMINACION
-===================================================== */
-
-document
-.getElementById(
-    "confirmDelete"
-)
-.addEventListener(
-    "click",
-    async function(){
-
-        if(
-            !registroAEliminar
-        ){
-
-            return;
-
-        }
-
-
-        const boton =
-            document.getElementById(
-                "confirmDelete"
-            );
-
-
-        boton.disabled = true;
-
-        boton.textContent =
-            "ELIMINANDO...";
-
-
-        const resultado =
-            await supabaseClient
-
+    const { error } =
+        await supabaseClient
             .from("hallazgos_mc")
-
-            .delete()
-
-            .eq(
-                "id",
-                registroAEliminar.id
-            );
+            .insert([registro]);
 
 
-        boton.disabled = false;
+    if (error) {
 
-        boton.textContent =
-            "ELIMINAR";
+        console.error(error);
 
+        if (
+            error.message &&
+            error.message.toLowerCase().includes("duplicate")
+        ) {
 
-        if(
-            resultado.error
-        ){
+            message.style.color = "#b42318";
 
-            console.error(
-                resultado.error
-            );
+            message.innerText =
+                "Ese PACKING ya está registrado.";
 
+        } else {
 
-            document.getElementById(
-                "deleteMessage"
-            ).textContent =
-                "No fue posible eliminar el registro. " +
-                resultado.error.message;
+            message.style.color = "#b42318";
 
-            document.getElementById(
-                "deleteMessage"
-            ).className =
-                "message error";
-
-
-            return;
+            message.innerText =
+                "No se pudo registrar el hallazgo: " +
+                error.message;
 
         }
 
-
-        document.getElementById(
-            "deleteModal"
-        ).style.display =
-            "none";
-
-
-        registroAEliminar =
-            null;
-
-
-        await cargarDatos();
-
-    }
-);
-
-
-/* =====================================================
-   ABRIR LOGIN AL PRESIONAR ELIMINAR
-===================================================== */
-
-document
-.getElementById(
-    "tablaRegistros"
-)
-.addEventListener(
-    "click",
-    function(event){
-
-        const boton =
-            event.target.closest(
-                ".btn-danger"
-            );
-
-
-        if(
-            !boton
-        ){
-
-            return;
-
-        }
-
-
-        const onclick =
-            boton.getAttribute(
-                "onclick"
-            );
-
-
-        const id =
-            onclick
-            .match(
-                /'([^']+)'/
-            );
-
-
-        if(
-            !id
-        ){
-
-            return;
-
-        }
-
-
-        registroAEliminar =
-            registros.find(
-                r =>
-                    String(r.id) ===
-                    String(id[1])
-            );
-
-
-        if(
-            !registroAEliminar
-        ){
-
-            return;
-
-        }
-
-
-        document.getElementById(
-            "deleteModal"
-        ).style.display =
-            "flex";
-
-
-        document.getElementById(
-            "loginModal"
-        ).style.display =
-            "flex";
-
-    }
-);
-
-
-/* =====================================================
-   LOGIN ADMINISTRADOR
-===================================================== */
-
-document
-.getElementById(
-    "loginButton"
-)
-.addEventListener(
-    "click",
-    async function(){
-
-        const email =
-            document.getElementById(
-                "adminEmail"
-            ).value.trim();
-
-
-        const password =
-            document.getElementById(
-                "adminPassword"
-            ).value;
-
-
-        const mensaje =
-            document.getElementById(
-                "loginMessage"
-            );
-
-
-        if(
-            !email ||
-            !password
-        ){
-
-            mensaje.textContent =
-                "Ingresa correo y contraseña.";
-
-            mensaje.className =
-                "message error";
-
-            return;
-
-        }
-
-
-        const boton =
-            document.getElementById(
-                "loginButton"
-            );
-
-
-        boton.disabled = true;
-
-        boton.textContent =
-            "ENTRANDO...";
-
-
-        const resultado =
-            await supabaseClient
-            .auth
-            .signInWithPassword({
-
-                email:email,
-
-                password:password
-
-            });
-
-
-        boton.disabled = false;
-
-        boton.textContent =
-            "ENTRAR";
-
-
-        if(
-            resultado.error
-        ){
-
-            mensaje.textContent =
-                "Correo o contraseña incorrectos.";
-
-            mensaje.className =
-                "message error";
-
-            return;
-
-        }
-
-
-        document.getElementById(
-            "loginModal"
-        ).style.display =
-            "none";
-
-
-        mensaje.textContent = "";
-
-
-        document.getElementById(
-            "adminPassword"
-        ).value = "";
-
-
-        document.getElementById(
-            "deleteModal"
-        ).style.display =
-            "flex";
-
-    }
-);
-
-
-/* =====================================================
-   REALTIME
-===================================================== */
-
-function activarRealtime(){
-
-    if(
-        canalRealtime
-    ){
-
-        supabaseClient
-        .removeChannel(
-            canalRealtime
-        );
-
+        return;
     }
 
 
-    canalRealtime =
-        supabaseClient
+    message.style.color = "#137333";
 
-        .channel(
-            "hallazgos-mc-cambios"
-        )
+    message.innerText =
+        "✓ Hallazgo registrado correctamente.";
+
+
+    document
+        .getElementById("hallazgoForm")
+        .reset();
+
+
+    setTimeout(() => {
+
+        message.innerText = "";
+
+    }, 4000);
+
+}
+
+
+/* ================================
+   FILTROS
+================================ */
+
+function aplicarFiltros() {
+
+    const desde =
+        document.getElementById("fechaDesde").value;
+
+    const hasta =
+        document.getElementById("fechaHasta").value;
+
+    const molino =
+        document.getElementById("filtroMolino").value;
+
+    const status =
+        document.getElementById("filtroStatus").value;
+
+    const responsabilidad =
+        document.getElementById("filtroResponsabilidad").value;
+
+
+    const filtrados =
+        todosLosRegistros.filter(registro => {
+
+            const fecha =
+                registro.fecha
+                    ? registro.fecha.substring(0, 10)
+                    : "";
+
+            if (desde && fecha < desde)
+                return false;
+
+            if (hasta && fecha > hasta)
+                return false;
+
+            if (molino && registro.molino !== molino)
+                return false;
+
+            if (status && registro.status !== status)
+                return false;
+
+            if (
+                responsabilidad &&
+                registro.responsabilidad !== responsabilidad
+            )
+                return false;
+
+            return true;
+
+        });
+
+
+    actualizarDashboard(filtrados);
+
+    mostrarTabla(filtrados);
+
+}
+
+
+/* ================================
+   LIMPIAR FILTROS
+================================ */
+
+function limpiarFiltros() {
+
+    document.getElementById("fechaDesde").value = "";
+    document.getElementById("fechaHasta").value = "";
+    document.getElementById("filtroMolino").value = "";
+    document.getElementById("filtroStatus").value = "";
+    document.getElementById("filtroResponsabilidad").value = "";
+
+    aplicarFiltros();
+
+}
+
+
+/* ================================
+   DASHBOARD
+================================ */
+
+function actualizarDashboard(registros) {
+
+    const total = registros.length;
+
+    const bloqueados =
+        registros.filter(
+            r => r.status === "Bloqueado"
+        ).length;
+
+    const propios =
+        registros.filter(
+            r => r.responsabilidad === "Propio"
+        ).length;
+
+    const molinos =
+        registros.filter(
+            r => r.responsabilidad === "Molino"
+        ).length;
+
+
+    document.getElementById("totalHallazgos").innerText =
+        total;
+
+    document.getElementById("porcentajeBloqueados").innerText =
+        calcularPorcentaje(bloqueados, total) + "%";
+
+    document.getElementById("totalPropio").innerText =
+        propios;
+
+    document.getElementById("porcentajePropio").innerText =
+        calcularPorcentaje(propios, total) + "%";
+
+
+    document.getElementById("totalMolino").innerText =
+        molinos;
+
+    document.getElementById("porcentajeMolino").innerText =
+        calcularPorcentaje(molinos, total) + "%";
+
+
+    actualizarGraficas(registros);
+
+}
+
+
+/* ================================
+   PORCENTAJE
+================================ */
+
+function calcularPorcentaje(valor, total) {
+
+    if (!total)
+        return 0;
+
+    return Math.round(
+        (valor / total) * 100
+    );
+
+}
+
+
+/* ================================
+   GRAFICAS
+================================ */
+
+function actualizarGraficas(registros) {
+
+    const hallazgos = contarPorCampo(
+        registros,
+        "hallazgo"
+    );
+
+    const statuses = contarPorCampo(
+        registros,
+        "status"
+    );
+
+    const responsabilidades = contarPorCampo(
+        registros,
+        "responsabilidad"
+    );
+
+    const molinos = contarPorCampo(
+        registros,
+        "molino"
+    );
+
+
+    crearGraficaBarra(
+        "chartHallazgos",
+        "Hallazgos",
+        hallazgos,
+        chartHallazgos,
+        chart => chartHallazgos = chart
+    );
+
+
+    crearGraficaDona(
+        "chartStatus",
+        statuses,
+        chartStatus,
+        chart => chartStatus = chart
+    );
+
+
+    crearGraficaDona(
+        "chartResponsabilidad",
+        responsabilidades,
+        chartResponsabilidad,
+        chart => chartResponsabilidad = chart
+    );
+
+
+    crearGraficaBarra(
+        "chartMolino",
+        "Molinos",
+        molinos,
+        chartMolino,
+        chart => chartMolino = chart
+    );
+
+}
+
+
+function contarPorCampo(registros, campo) {
+
+    const resultado = {};
+
+    registros.forEach(registro => {
+
+        const valor =
+            registro[campo] || "Sin información";
+
+        resultado[valor] =
+            (resultado[valor] || 0) + 1;
+
+    });
+
+    return resultado;
+
+}
+
+
+function crearGraficaBarra(
+    canvasId,
+    titulo,
+    datos,
+    graficaAnterior,
+    guardarGrafica
+) {
+
+    if (graficaAnterior)
+        graficaAnterior.destroy();
+
+
+    const canvas =
+        document.getElementById(canvasId);
+
+    const chart =
+        new Chart(canvas, {
+
+            type: "bar",
+
+            data: {
+
+                labels: Object.keys(datos),
+
+                datasets: [{
+                    label: titulo,
+                    data: Object.values(datos)
+                }]
+
+            },
+
+            options: {
+
+                responsive: true,
+
+                maintainAspectRatio: false,
+
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+
+                scales: {
+
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            precision: 0
+                        }
+                    }
+
+                }
+
+            }
+
+        });
+
+
+    guardarGrafica(chart);
+
+}
+
+
+function crearGraficaDona(
+    canvasId,
+    datos,
+    graficaAnterior,
+    guardarGrafica
+) {
+
+    if (graficaAnterior)
+        graficaAnterior.destroy();
+
+
+    const canvas =
+        document.getElementById(canvasId);
+
+
+    const chart =
+        new Chart(canvas, {
+
+            type: "doughnut",
+
+            data: {
+
+                labels: Object.keys(datos),
+
+                datasets: [{
+                    data: Object.values(datos)
+                }]
+
+            },
+
+            options: {
+
+                responsive: true,
+
+                maintainAspectRatio: false,
+
+                plugins: {
+
+                    legend: {
+                        position: "bottom"
+                    }
+
+                }
+
+            }
+
+        });
+
+
+    guardarGrafica(chart);
+
+}
+
+
+/* ================================
+   TABLA
+================================ */
+
+function mostrarTabla(registros) {
+
+    const tbody =
+        document.getElementById("tablaRegistros");
+
+    tbody.innerHTML = "";
+
+
+    if (!registros.length) {
+
+        tbody.innerHTML =
+            '<tr><td colspan="11" class="empty">No hay registros para mostrar.</td></tr>';
+
+        return;
+    }
+
+
+    registros.forEach(registro => {
+
+        const tr =
+            document.createElement("tr");
+
+
+        const fecha =
+            registro.fecha
+                ? new Date(registro.fecha)
+                    .toLocaleString("es-MX")
+                : "";
+
+
+        const statusClass =
+            registro.status === "Bloqueado"
+                ? "badge-bloqueado"
+                : "badge-liberado";
+
+
+        const responsabilidadClass =
+            registro.responsabilidad === "Molino"
+                ? "badge-molino"
+                : "badge-propio";
+
+
+        tr.innerHTML = `
+
+            <td>${escapeHtml(fecha)}</td>
+
+            <td><strong>${escapeHtml(registro.packing || "")}</strong></td>
+
+            <td>${escapeHtml(registro.spec || "")}</td>
+
+            <td>${escapeHtml(registro.espesor || "")}</td>
+
+            <td>${escapeHtml(registro.ancho || "")}</td>
+
+            <td>${escapeHtml(registro.molino || "")}</td>
+
+            <td>${escapeHtml(registro.supervisor || "")}</td>
+
+            <td>${escapeHtml(registro.hallazgo || "")}</td>
+
+            <td>
+                <span class="badge ${statusClass}">
+                    ${escapeHtml(registro.status || "")}
+                </span>
+            </td>
+
+            <td>
+                <span class="badge ${responsabilidadClass}">
+                    ${escapeHtml(registro.responsabilidad || "")}
+                </span>
+            </td>
+
+            <td>
+                <button
+                    class="btn-danger btn-small"
+                    onclick="eliminarRegistro(${registro.id})"
+                >
+                    ELIMINAR
+                </button>
+            </td>
+
+        `;
+
+
+        tbody.appendChild(tr);
+
+    });
+
+}
+
+
+/* ================================
+   MOLINOS
+================================ */
+
+function actualizarMolinos() {
+
+    const select =
+        document.getElementById("filtroMolino");
+
+    const valorActual =
+        select.value;
+
+
+    const molinos =
+        [...new Set(
+            todosLosRegistros
+                .map(r => r.molino)
+                .filter(Boolean)
+        )]
+        .sort();
+
+
+    select.innerHTML =
+        '<option value="">Todos</option>';
+
+
+    molinos.forEach(molino => {
+
+        const option =
+            document.createElement("option");
+
+        option.value = molino;
+        option.textContent = molino;
+
+        select.appendChild(option);
+
+    });
+
+
+    if (molinos.includes(valorActual))
+        select.value = valorActual;
+
+}
+
+
+/* ================================
+   TIEMPO REAL
+================================ */
+
+function suscribirseTiempoReal() {
+
+    supabaseClient
+        .channel("hallazgos-mc-tiempo-real")
 
         .on(
             "postgres_changes",
             {
-                event:"*",
-                schema:"public",
-                table:"hallazgos_mc"
+                event: "*",
+                schema: "public",
+                table: "hallazgos_mc"
             },
-            function(){
 
-                cargarDatos();
+            async () => {
+
+                await cargarRegistros();
 
             }
+
         )
 
         .subscribe();
@@ -4048,58 +1459,250 @@ function activarRealtime(){
 }
 
 
-/* =====================================================
-   CERRAR MODALES AL HACER CLICK AFUERA
-===================================================== */
+/* ================================
+   AUTENTICACION
+================================ */
 
-window.addEventListener(
-    "click",
-    function(event){
+async function comprobarSesion() {
 
-        const loginModal =
-            document.getElementById(
-                "loginModal"
-            );
+    const {
+        data: { session }
+    } = await supabaseClient.auth.getSession();
 
 
-        const deleteModal =
-            document.getElementById(
-                "deleteModal"
-            );
+    actualizarEstadoSesion(session);
+
+}
 
 
-        if(
-            event.target ===
-            loginModal
-        ){
+function actualizarEstadoSesion(session) {
 
-            loginModal.style.display =
-                "none";
+    const loginButton =
+        document.getElementById("loginButton");
 
-        }
+    const logoutButton =
+        document.getElementById("logoutButton");
+
+    const loginStatus =
+        document.getElementById("loginStatus");
 
 
-        if(
-            event.target ===
-            deleteModal
-        ){
+    if (session) {
 
-            deleteModal.style.display =
-                "none";
+        loginButton.style.display = "none";
 
-        }
+        logoutButton.style.display = "inline-block";
+
+        loginStatus.innerText =
+            "🔓 Sesión administrativa activa";
+
+    } else {
+
+        loginButton.style.display = "inline-block";
+
+        logoutButton.style.display = "none";
+
+        loginStatus.innerText =
+            "🔒 Eliminación protegida";
+
+    }
+
+}
+
+
+/* ================================
+   LOGIN
+================================ */
+
+function abrirLogin() {
+
+    document.getElementById("loginModal").style.display =
+        "flex";
+
+    document.getElementById("loginMessage").innerText =
+        "";
+
+}
+
+
+function cerrarLogin() {
+
+    document.getElementById("loginModal").style.display =
+        "none";
+
+}
+
+
+async function iniciarSesion() {
+
+    const email =
+        document.getElementById("loginEmail").value.trim();
+
+    const password =
+        document.getElementById("loginPassword").value;
+
+    const message =
+        document.getElementById("loginMessage");
+
+
+    if (!email || !password) {
+
+        message.style.color = "#b42318";
+
+        message.innerText =
+            "Ingresa correo y contraseña.";
+
+        return;
+    }
+
+
+    message.style.color = "#102d4d";
+
+    message.innerText =
+        "Validando...";
+
+
+    const { data, error } =
+        await supabaseClient.auth.signInWithPassword({
+            email: email,
+            password: password
+        });
+
+
+    if (error) {
+
+        message.style.color = "#b42318";
+
+        message.innerText =
+            "Usuario o contraseña incorrectos.";
+
+        console.error(error);
+
+        return;
+    }
+
+
+    actualizarEstadoSesion(data.session);
+
+    cerrarLogin();
+
+
+    document.getElementById("loginEmail").value = "";
+    document.getElementById("loginPassword").value = "";
+
+}
+
+
+/* ================================
+   CERRAR SESION
+================================ */
+
+async function cerrarSesion() {
+
+    await supabaseClient.auth.signOut();
+
+    actualizarEstadoSesion(null);
+
+}
+
+
+/* ================================
+   ELIMINAR REGISTRO
+================================ */
+
+async function eliminarRegistro(id) {
+
+    const {
+        data: { session }
+    } = await supabaseClient.auth.getSession();
+
+
+    if (!session) {
+
+        alert(
+            "Necesitas iniciar sesión como administrador para eliminar registros."
+        );
+
+        abrirLogin();
+
+        return;
+    }
+
+
+    const registro =
+        todosLosRegistros.find(r => r.id === id);
+
+
+    const confirmar =
+        confirm(
+            "¿Seguro que deseas eliminar este registro?\n\n" +
+            "PACKING: " +
+            (registro?.packing || "") +
+            "\n\nEsta acción no se puede deshacer."
+        );
+
+
+    if (!confirmar)
+        return;
+
+
+    const { error } =
+        await supabaseClient
+            .from("hallazgos_mc")
+            .delete()
+            .eq("id", id);
+
+
+    if (error) {
+
+        console.error(error);
+
+        alert(
+            "No se pudo eliminar el registro.\n\n" +
+            error.message
+        );
+
+        return;
+    }
+
+
+    alert(
+        "Registro eliminado correctamente."
+    );
+
+
+    await cargarRegistros();
+
+}
+
+
+/* ================================
+   SEGURIDAD HTML
+================================ */
+
+function escapeHtml(valor) {
+
+    return String(valor)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+}
+
+
+/* ================================
+   CAMBIO DE SESION
+================================ */
+
+supabaseClient.auth.onAuthStateChange(
+    (_event, session) => {
+
+        actualizarEstadoSesion(session);
 
     }
 );
-
-
-/* =====================================================
-   INICIO
-===================================================== */
-
-activarRealtime();
-
-cargarDatos();
 
 </script>
 
