@@ -6,7 +6,10 @@
 
 <title>Bitácora de Hallazgos MC</title>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
+
 *{
     box-sizing:border-box;
 }
@@ -19,7 +22,7 @@ body{
 }
 
 .container{
-    max-width:1100px;
+    max-width:1250px;
     margin:auto;
     padding:20px;
 }
@@ -27,19 +30,32 @@ body{
 header{
     background:#0f2742;
     color:white;
-    padding:22px;
+    padding:24px;
     border-radius:14px;
     margin-bottom:20px;
 }
 
 header h1{
     margin:0 0 6px 0;
-    font-size:25px;
+    font-size:26px;
 }
 
 header p{
     margin:0;
-    opacity:.8;
+    opacity:.85;
+}
+
+.status{
+    margin-top:12px;
+    font-size:13px;
+}
+
+.status-ok{
+    color:#8ee6a9;
+}
+
+.status-error{
+    color:#ffb4b4;
 }
 
 .card{
@@ -53,6 +69,7 @@ header p{
 .card h2{
     margin-top:0;
     color:#0f2742;
+    font-size:20px;
 }
 
 .form-grid{
@@ -72,7 +89,8 @@ header p{
     margin-bottom:6px;
 }
 
-input,select{
+input,
+select{
     width:100%;
     padding:12px;
     border:1px solid #ccd3da;
@@ -81,7 +99,8 @@ input,select{
     background:white;
 }
 
-input:focus,select:focus{
+input:focus,
+select:focus{
     outline:none;
     border-color:#0f2742;
 }
@@ -109,8 +128,13 @@ button{
     background:#193c61;
 }
 
+.btn-secondary{
+    background:#e7edf3;
+    color:#0f2742;
+}
+
 .message{
-    margin-top:10px;
+    margin-top:12px;
     font-weight:bold;
     font-size:14px;
 }
@@ -123,9 +147,15 @@ button{
     color:#b42318;
 }
 
+.small-note{
+    font-size:12px;
+    color:#667085;
+    margin-top:5px;
+}
+
 .stats{
     display:grid;
-    grid-template-columns:repeat(4,1fr);
+    grid-template-columns:repeat(5,1fr);
     gap:12px;
 }
 
@@ -149,8 +179,137 @@ button{
 
 .filters{
     display:grid;
-    grid-template-columns:repeat(3,1fr);
+    grid-template-columns:repeat(5,1fr);
     gap:12px;
+}
+
+.dashboard-grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:20px;
+}
+
+.chart-card{
+    background:white;
+    border-radius:14px;
+    padding:20px;
+    box-shadow:0 2px 8px rgba(0,0,0,.06);
+    min-width:0;
+}
+
+.chart-card h3{
+    margin-top:0;
+    color:#0f2742;
+}
+
+.chart-area{
+    min-height:260px;
+}
+
+.chart-row{
+    margin-bottom:15px;
+}
+
+.chart-label{
+    display:flex;
+    justify-content:space-between;
+    gap:10px;
+    font-size:13px;
+    font-weight:bold;
+    margin-bottom:5px;
+}
+
+.bar-container{
+    height:25px;
+    background:#e5e7eb;
+    border-radius:6px;
+    overflow:hidden;
+}
+
+.bar{
+    height:100%;
+    background:#0f2742;
+    border-radius:6px;
+}
+
+.pareto-item{
+    margin-bottom:14px;
+}
+
+.pareto-label{
+    display:flex;
+    justify-content:space-between;
+    font-size:13px;
+    font-weight:bold;
+}
+
+.pareto-bar-container{
+    height:22px;
+    background:#e5e7eb;
+    border-radius:5px;
+    overflow:hidden;
+    margin-top:4px;
+}
+
+.pareto-bar{
+    height:100%;
+    background:#506d89;
+}
+
+.pareto-percent{
+    font-size:11px;
+    color:#667085;
+    margin-top:3px;
+}
+
+.pie-container{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:25px;
+    flex-wrap:wrap;
+}
+
+.pie{
+    width:190px;
+    height:190px;
+    border-radius:50%;
+    background:#e5e7eb;
+}
+
+.legend{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+    font-size:12px;
+}
+
+.legend-item{
+    display:flex;
+    align-items:center;
+    gap:7px;
+}
+
+.legend-color{
+    width:12px;
+    height:12px;
+    border-radius:3px;
+}
+
+.line-chart{
+    width:100%;
+    height:260px;
+}
+
+.line-chart svg{
+    width:100%;
+    height:100%;
+}
+
+.empty{
+    color:#667085;
+    text-align:center;
+    padding:35px 10px;
 }
 
 .table-wrapper{
@@ -160,7 +319,7 @@ button{
 table{
     width:100%;
     border-collapse:collapse;
-    min-width:900px;
+    min-width:1000px;
 }
 
 th{
@@ -191,49 +350,29 @@ tr:hover{
     font-weight:bold;
 }
 
-.chart{
-    margin-top:15px;
-}
-
-.chart-row{
-    margin-bottom:14px;
-}
-
-.chart-label{
-    font-size:13px;
-    font-weight:bold;
-    margin-bottom:5px;
+.actions{
     display:flex;
-    justify-content:space-between;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-bottom:15px;
 }
 
-.bar-container{
-    height:25px;
-    background:#e5e7eb;
-    border-radius:6px;
-    overflow:hidden;
+@media(max-width:1000px){
+
+    .stats{
+        grid-template-columns:repeat(3,1fr);
+    }
+
+    .filters{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    .dashboard-grid{
+        grid-template-columns:1fr;
+    }
 }
 
-.bar{
-    height:100%;
-    background:#0f2742;
-    border-radius:6px;
-    transition:width .3s;
-}
-
-.empty{
-    color:#667085;
-    text-align:center;
-    padding:20px;
-}
-
-.small-note{
-    font-size:12px;
-    color:#667085;
-    margin-top:5px;
-}
-
-@media(max-width:700px){
+@media(max-width:650px){
 
     .container{
         padding:12px;
@@ -259,10 +398,16 @@ tr:hover{
         grid-template-columns:1fr;
     }
 
-    .card{
+    .card,
+    .chart-card{
         padding:15px;
     }
+
+    .stat-number{
+        font-size:23px;
+    }
 }
+
 </style>
 </head>
 
@@ -271,54 +416,144 @@ tr:hover{
 <div class="container">
 
 <header>
-    <h1>Bitácora de Hallazgos de Materia Prima</h1>
-    <p>Master Coil · Registro y análisis de hallazgos</p>
+
+<h1>
+Bitácora de Hallazgos de Materia Prima
+</h1>
+
+<p>
+Master Coil · Recepción y seguimiento de hallazgos
+</p>
+
+<div
+id="connectionStatus"
+class="status"
+>
+Conectando con la base de datos...
+</div>
+
 </header>
+
+
+<!-- ============================= -->
+<!-- ESTADISTICAS -->
+<!-- ============================= -->
 
 <div class="stats">
 
-    <div class="stat">
-        <div class="stat-title">MC registradas</div>
-        <div class="stat-number" id="totalMC">0</div>
-    </div>
+<div class="stat">
 
-    <div class="stat">
-        <div class="stat-title">Hallazgos</div>
-        <div class="stat-number" id="totalHallazgos">0</div>
-    </div>
+<div class="stat-title">
+MC registradas
+</div>
 
-    <div class="stat">
-        <div class="stat-title">Molinos</div>
-        <div class="stat-number" id="totalMolinos">0</div>
-    </div>
-
-    <div class="stat">
-        <div class="stat-title">Supervisores</div>
-        <div class="stat-number" id="totalSupervisores">0</div>
-    </div>
+<div
+id="totalMC"
+class="stat-number"
+>
+0
+</div>
 
 </div>
 
+
+<div class="stat">
+
+<div class="stat-title">
+MC con hallazgo
+</div>
+
+<div
+id="mcConHallazgo"
+class="stat-number"
+>
+0
+</div>
+
+</div>
+
+
+<div class="stat">
+
+<div class="stat-title">
+% con hallazgo
+</div>
+
+<div
+id="porcentajeHallazgo"
+class="stat-number"
+>
+0%
+</div>
+
+</div>
+
+
+<div class="stat">
+
+<div class="stat-title">
+Molinos
+</div>
+
+<div
+id="totalMolinos"
+class="stat-number"
+>
+0
+</div>
+
+</div>
+
+
+<div class="stat">
+
+<div class="stat-title">
+Supervisores
+</div>
+
+<div
+id="totalSupervisores"
+class="stat-number"
+>
+0
+</div>
+
+</div>
+
+</div>
+
+
 <br>
+
+
+<!-- ============================= -->
+<!-- REGISTRO -->
+<!-- ============================= -->
 
 <div class="card">
 
-<h2>Registrar Master Coil</h2>
+<h2>
+Registrar Master Coil
+</h2>
 
 <form id="registroForm">
 
 <div class="form-grid">
 
+
 <div class="field full">
-<label>PACKING · exactamente 15 dígitos *</label>
+
+<label>
+PACKING · exactamente 15 dígitos *
+</label>
 
 <input
-    type="text"
-    id="packing"
-    inputmode="numeric"
-    maxlength="15"
-    placeholder="Ejemplo: 123456789012345"
-    required
+type="text"
+id="packing"
+inputmode="numeric"
+maxlength="15"
+placeholder="Ej. 123456789012345"
+required
 >
 
 <div class="small-note">
@@ -330,13 +565,15 @@ Debe contener exactamente 15 números.
 
 <div class="field">
 
-<label>SPEC *</label>
+<label>
+SPEC *
+</label>
 
 <input
-    type="text"
-    id="spec"
-    placeholder="Ej. SP270C"
-    required
+type="text"
+id="spec"
+placeholder="Ej. SP270C"
+required
 >
 
 </div>
@@ -344,13 +581,15 @@ Debe contener exactamente 15 números.
 
 <div class="field">
 
-<label>ESPESOR *</label>
+<label>
+ESPESOR *
+</label>
 
 <input
-    type="text"
-    id="espesor"
-    placeholder="Ej. 1.20"
-    required
+type="text"
+id="espesor"
+placeholder="Ej. 1.20"
+required
 >
 
 </div>
@@ -358,13 +597,15 @@ Debe contener exactamente 15 números.
 
 <div class="field">
 
-<label>ANCHO *</label>
+<label>
+ANCHO *
+</label>
 
 <input
-    type="text"
-    id="ancho"
-    placeholder="Ej. 1250"
-    required
+type="text"
+id="ancho"
+placeholder="Ej. 1250"
+required
 >
 
 </div>
@@ -372,13 +613,15 @@ Debe contener exactamente 15 números.
 
 <div class="field">
 
-<label>MOLINO *</label>
+<label>
+MOLINO *
+</label>
 
 <input
-    type="text"
-    id="molino"
-    placeholder="Ej. Nippon Steel"
-    required
+type="text"
+id="molino"
+placeholder="Ej. Molino A"
+required
 >
 
 </div>
@@ -386,13 +629,15 @@ Debe contener exactamente 15 números.
 
 <div class="field">
 
-<label>SUPERVISOR *</label>
+<label>
+SUPERVISOR *
+</label>
 
 <input
-    type="text"
-    id="supervisor"
-    placeholder="Nombre del supervisor"
-    required
+type="text"
+id="supervisor"
+placeholder="Nombre del supervisor"
+required
 >
 
 </div>
@@ -400,9 +645,14 @@ Debe contener exactamente 15 números.
 
 <div class="field">
 
-<label>HALLAZGO *</label>
+<label>
+HALLAZGO *
+</label>
 
-<select id="hallazgo" required>
+<select
+id="hallazgo"
+required
+>
 
 <option value="">
 Seleccionar hallazgo...
@@ -439,12 +689,15 @@ Material sin registro (Expected)
 
 <div class="field full">
 
-<label>FECHA</label>
+<label>
+FECHA
+</label>
 
 <input
-    type="text"
-    id="fecha"
-    readonly
+type="text"
+id="fecha"
+readonly
+value="Se generará automáticamente"
 >
 
 </div>
@@ -453,8 +706,9 @@ Material sin registro (Expected)
 <div class="full">
 
 <button
-    type="submit"
-    class="btn-primary"
+type="submit"
+class="btn-primary"
+id="btnRegistrar"
 >
 REGISTRAR HALLAZGO
 </button>
@@ -465,23 +719,69 @@ REGISTRAR HALLAZGO
 
 </form>
 
-<div id="message" class="message"></div>
+<div
+id="message"
+class="message"
+></div>
 
 </div>
 
 
+<!-- ============================= -->
+<!-- FILTROS -->
+<!-- ============================= -->
+
 <div class="card">
 
-<h2>Filtros</h2>
+<h2>
+Filtros del Dashboard
+</h2>
 
 <div class="filters">
 
+
 <div class="field">
 
-<label>Molino</label>
+<label>
+Fecha desde
+</label>
 
-<select id="filtroMolino">
-<option value="">Todos los molinos</option>
+<input
+type="date"
+id="fechaDesde"
+>
+
+</div>
+
+
+<div class="field">
+
+<label>
+Fecha hasta
+</label>
+
+<input
+type="date"
+id="fechaHasta"
+>
+
+</div>
+
+
+<div class="field">
+
+<label>
+Molino
+</label>
+
+<select
+id="filtroMolino"
+>
+
+<option value="">
+Todos los molinos
+</option>
+
 </select>
 
 </div>
@@ -489,9 +789,32 @@ REGISTRAR HALLAZGO
 
 <div class="field">
 
-<label>Hallazgo</label>
+<label>
+Supervisor
+</label>
 
-<select id="filtroHallazgo">
+<select
+id="filtroSupervisor"
+>
+
+<option value="">
+Todos los supervisores
+</option>
+
+</select>
+
+</div>
+
+
+<div class="field">
+
+<label>
+Hallazgo
+</label>
+
+<select
+id="filtroHallazgo"
+>
 
 <option value="">
 Todos los hallazgos
@@ -525,47 +848,153 @@ Material sin registro (Expected)
 
 </div>
 
+</div>
 
-<div class="field">
+<br>
 
-<label>Supervisor</label>
+<div class="actions">
 
-<select id="filtroSupervisor">
+<button
+type="button"
+class="btn-secondary"
+id="limpiarFiltros"
+>
+LIMPIAR FILTROS
+</button>
 
-<option value="">
-Todos los supervisores
-</option>
+<button
+type="button"
+class="btn-secondary"
+id="actualizarDatos"
+>
+ACTUALIZAR DATOS
+</button>
 
-</select>
+</div>
 
+</div>
+
+
+<!-- ============================= -->
+<!-- DASHBOARD -->
+<!-- ============================= -->
+
+<div class="dashboard-grid">
+
+
+<!-- MOLINO -->
+
+<div class="chart-card">
+
+<h3>
+Hallazgos por Molino
+</h3>
+
+<div
+id="graficaMolino"
+class="chart-area"
+></div>
+
+</div>
+
+
+<!-- HALLAZGO -->
+
+<div class="chart-card">
+
+<h3>
+Distribución por Tipo de Hallazgo
+</h3>
+
+<div
+id="graficaPie"
+class="chart-area"
+></div>
+
+</div>
+
+
+<!-- PARETO -->
+
+<div class="chart-card">
+
+<h3>
+Pareto de Hallazgos
+</h3>
+
+<div
+id="graficaPareto"
+class="chart-area"
+></div>
+
+</div>
+
+
+<!-- TENDENCIA -->
+
+<div class="chart-card">
+
+<h3>
+Tendencia Mensual
+</h3>
+
+<div
+id="graficaLinea"
+class="line-chart"
+></div>
+
+</div>
+
+
+<!-- SUPERVISOR -->
+
+<div class="chart-card">
+
+<h3>
+Hallazgos por Supervisor
+</h3>
+
+<div
+id="graficaSupervisor"
+class="chart-area"
+></div>
+
+</div>
+
+
+<!-- RESUMEN -->
+
+<div class="chart-card">
+
+<h3>
+Resumen de filtros
+</h3>
+
+<div id="resumenFiltros">
+
+<div class="empty">
+Selecciona filtros para analizar la información.
 </div>
 
 </div>
 
 </div>
 
+</div>
+
+
+<br>
+
+
+<!-- ============================= -->
+<!-- TABLA -->
+<!-- ============================= -->
 
 <div class="card">
 
-<h2>Hallazgos por Molino</h2>
-
-<div id="graficaMolino" class="chart"></div>
-
-</div>
-
-
-<div class="card">
-
-<h2>Hallazgos por Tipo</h2>
-
-<div id="graficaHallazgo" class="chart"></div>
-
-</div>
-
-
-<div class="card">
-
-<h2>Registros capturados</h2>
+<h2>
+Registros capturados
+</h2>
 
 <div class="table-wrapper">
 
@@ -575,20 +1004,45 @@ Todos los supervisores
 
 <tr>
 
-<th>Fecha</th>
-<th>PACKING</th>
-<th>SPEC</th>
-<th>ESPESOR</th>
-<th>ANCHO</th>
-<th>MOLINO</th>
-<th>SUPERVISOR</th>
-<th>HALLAZGO</th>
+<th>
+Fecha
+</th>
+
+<th>
+PACKING
+</th>
+
+<th>
+SPEC
+</th>
+
+<th>
+ESPESOR
+</th>
+
+<th>
+ANCHO
+</th>
+
+<th>
+MOLINO
+</th>
+
+<th>
+SUPERVISOR
+</th>
+
+<th>
+HALLAZGO
+</th>
 
 </tr>
 
 </thead>
 
-<tbody id="tablaRegistros">
+<tbody
+id="tablaRegistros"
+>
 
 </tbody>
 
@@ -603,53 +1057,61 @@ Todos los supervisores
 
 <script>
 
-let registros = JSON.parse(
-    localStorage.getItem("bitacoraMC")
-) || [];
+/* =====================================================
+   CONFIGURACION SUPABASE
+===================================================== */
 
+const SUPABASE_URL =
+"https://ubmiqpbaauobzxlmiowv.supabase.co";
+
+const SUPABASE_KEY =
+"sb_publishable_ZQM76cUACqsmd8gk9wUPAQ_1u9G9w9I";
+
+
+const supabaseClient =
+supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
+
+
+/* =====================================================
+   VARIABLES
+===================================================== */
+
+let registros = [];
+
+let canalRealtime = null;
+
+
+/* =====================================================
+   HALLAZGOS
+===================================================== */
 
 const hallazgosDisponibles = [
+
     "Spec incorrecta",
+
     "Falta de Spec",
+
     "Sin etiqueta de molino",
+
     "Error en Expected",
+
     "Error en Actual",
+
     "Material sin registro (Expected)"
+
 ];
 
 
-function actualizarFecha(){
-
-    const ahora = new Date();
-
-    const fecha = ahora.toLocaleString(
-        "es-MX",
-        {
-            day:"2-digit",
-            month:"2-digit",
-            year:"numeric",
-            hour:"2-digit",
-            minute:"2-digit"
-        }
-    );
-
-    document.getElementById("fecha").value = fecha;
-}
-
-
-function guardar(){
-
-    localStorage.setItem(
-        "bitacoraMC",
-        JSON.stringify(registros)
-    );
-
-}
-
+/* =====================================================
+   ESCAPAR TEXTO
+===================================================== */
 
 function escapar(texto){
 
-    return String(texto)
+    return String(texto ?? "")
         .replaceAll("&","&amp;")
         .replaceAll("<","&lt;")
         .replaceAll(">","&gt;")
@@ -659,280 +1121,623 @@ function escapar(texto){
 }
 
 
-function mostrarMensaje(texto,tipo){
+/* =====================================================
+   MENSAJE
+===================================================== */
+
+function mostrarMensaje(
+    texto,
+    tipo
+){
 
     const mensaje =
         document.getElementById("message");
 
-    mensaje.textContent = texto;
+    mensaje.textContent =
+        texto;
 
     mensaje.className =
         "message " + tipo;
 
     setTimeout(function(){
 
-        mensaje.textContent = "";
+        mensaje.textContent =
+            "";
 
-    },4000);
+    },5000);
 
 }
 
 
-document
-.getElementById("packing")
-.addEventListener("input",function(){
+/* =====================================================
+   CARGAR DATOS
+===================================================== */
 
-    this.value =
-        this.value
-        .replace(/\D/g,"")
-        .slice(0,15);
+async function cargarDatos(){
 
-});
+    const status =
+        document.getElementById(
+            "connectionStatus"
+        );
 
+    status.textContent =
+        "Consultando datos...";
+
+    status.className =
+        "status";
+
+
+    const {
+        data,
+        error
+    } =
+    await supabaseClient
+
+        .from("hallazgos_mc")
+
+        .select("*")
+
+        .order(
+            "fecha",
+            {
+                ascending:false
+            }
+        );
+
+
+    if(error){
+
+        console.error(error);
+
+        status.textContent =
+            "Error de conexión con Supabase.";
+
+        status.className =
+            "status status-error";
+
+        return;
+
+    }
+
+
+    registros =
+        data || [];
+
+
+    status.textContent =
+        "● Conectado · Datos actualizados";
+
+    status.className =
+        "status status-ok";
+
+
+    actualizarFiltros();
+
+    actualizarDashboard();
+
+}
+
+
+/* =====================================================
+   REGISTRO
+===================================================== */
 
 document
 .getElementById("registroForm")
-.addEventListener("submit",function(event){
+.addEventListener(
+    "submit",
+    async function(event){
 
-    event.preventDefault();
-
-
-    const packing =
-        document.getElementById("packing")
-        .value.trim();
+        event.preventDefault();
 
 
-    if(!/^\d{15}$/.test(packing)){
-
-        mostrarMensaje(
-            "El PACKING debe contener exactamente 15 dígitos.",
-            "error"
-        );
-
-        return;
-
-    }
+        const boton =
+            document.getElementById(
+                "btnRegistrar"
+            );
 
 
-    const duplicado =
-        registros.some(
-            r => r.packing === packing
-        );
-
-
-    if(duplicado){
-
-        mostrarMensaje(
-            "Ese PACKING ya se encuentra registrado.",
-            "error"
-        );
-
-        return;
-
-    }
-
-
-    const registro = {
-
-        fecha:
-            document.getElementById("fecha").value,
-
-        packing:packing,
-
-        spec:
-            document.getElementById("spec")
-            .value.trim(),
-
-        espesor:
-            document.getElementById("espesor")
-            .value.trim(),
-
-        ancho:
-            document.getElementById("ancho")
-            .value.trim(),
-
-        molino:
-            document.getElementById("molino")
-            .value.trim(),
-
-        supervisor:
-            document.getElementById("supervisor")
-            .value.trim(),
-
-        hallazgo:
-            document.getElementById("hallazgo")
+        const packing =
+            document.getElementById(
+                "packing"
+            )
             .value
-
-    };
-
-
-    registros.push(registro);
-
-    guardar();
-
-    this.reset();
-
-    actualizarFecha();
-
-    mostrarMensaje(
-        "✓ Hallazgo registrado correctamente.",
-        "success"
-    );
-
-    actualizarTodo();
-
-});
+            .trim();
 
 
-function actualizarEstadisticas(datos){
+        if(!/^\d{15}$/.test(packing)){
 
-    document.getElementById("totalMC")
-        .textContent = datos.length;
+            mostrarMensaje(
+                "El PACKING debe contener exactamente 15 dígitos.",
+                "error"
+            );
+
+            return;
+
+        }
 
 
-    document.getElementById("totalHallazgos")
-        .textContent = datos.length;
+        const registro = {
+
+            packing:packing,
+
+            spec:
+                document
+                .getElementById("spec")
+                .value
+                .trim(),
+
+            espesor:
+                document
+                .getElementById("espesor")
+                .value
+                .trim(),
+
+            ancho:
+                document
+                .getElementById("ancho")
+                .value
+                .trim(),
+
+            molino:
+                document
+                .getElementById("molino")
+                .value
+                .trim(),
+
+            supervisor:
+                document
+                .getElementById("supervisor")
+                .value
+                .trim(),
+
+            hallazgo:
+                document
+                .getElementById("hallazgo")
+                .value
+
+        };
 
 
-    const molinos =
-        new Set(
-            datos.map(r => r.molino)
+        boton.disabled =
+            true;
+
+        boton.textContent =
+            "REGISTRANDO...";
+
+
+        const {
+            data,
+            error
+        } =
+        await supabaseClient
+
+            .from("hallazgos_mc")
+
+            .insert([registro])
+
+            .select();
+
+
+        boton.disabled =
+            false;
+
+        boton.textContent =
+            "REGISTRAR HALLAZGO";
+
+
+        if(error){
+
+            console.error(error);
+
+
+            if(
+                error.code ===
+                "23505"
+            ){
+
+                mostrarMensaje(
+                    "⚠ Ese PACKING ya está registrado.",
+                    "error"
+                );
+
+            }
+            else{
+
+                mostrarMensaje(
+                    "Error al registrar: " +
+                    error.message,
+                    "error"
+                );
+
+            }
+
+            return;
+
+        }
+
+
+        document
+        .getElementById(
+            "registroForm"
+        )
+        .reset();
+
+
+        document
+        .getElementById(
+            "fecha"
+        )
+        .value =
+            "Se generará automáticamente";
+
+
+        mostrarMensaje(
+            "✓ Hallazgo registrado correctamente.",
+            "success"
         );
 
-    document.getElementById("totalMolinos")
-        .textContent = molinos.size;
+
+        await cargarDatos();
+
+    }
+);
 
 
-    const supervisores =
-        new Set(
-            datos.map(r => r.supervisor)
-        );
+/* =====================================================
+   PACKING
+===================================================== */
 
-    document.getElementById("totalSupervisores")
-        .textContent = supervisores.size;
+document
+.getElementById("packing")
+.addEventListener(
+    "input",
+    function(){
 
-}
+        this.value =
+            this.value
+            .replace(/\D/g,"")
+            .slice(0,15);
 
+    }
+);
+
+
+/* =====================================================
+   FILTROS
+===================================================== */
 
 function actualizarFiltros(){
 
     const molinoSelect =
-        document.getElementById("filtroMolino");
+        document.getElementById(
+            "filtroMolino"
+        );
+
 
     const supervisorSelect =
-        document.getElementById("filtroSupervisor");
+        document.getElementById(
+            "filtroSupervisor"
+        );
 
 
     const molinoActual =
         molinoSelect.value;
+
 
     const supervisorActual =
         supervisorSelect.value;
 
 
     const molinos =
-        [...new Set(
-            registros.map(r => r.molino)
-        )].sort();
+        [
+            ...new Set(
+                registros
+                .map(r => r.molino)
+                .filter(Boolean)
+            )
+        ]
+        .sort();
 
 
     const supervisores =
-        [...new Set(
-            registros.map(r => r.supervisor)
-        )].sort();
+        [
+            ...new Set(
+                registros
+                .map(r => r.supervisor)
+                .filter(Boolean)
+            )
+        ]
+        .sort();
 
 
     molinoSelect.innerHTML =
         '<option value="">Todos los molinos</option>';
 
 
-    molinos.forEach(function(molino){
+    molinos.forEach(
+        function(molino){
 
-        const option =
-            document.createElement("option");
+            const option =
+                document.createElement(
+                    "option"
+                );
 
-        option.value = molino;
+            option.value =
+                molino;
 
-        option.textContent = molino;
+            option.textContent =
+                molino;
 
-        molinoSelect.appendChild(option);
+            molinoSelect
+                .appendChild(
+                    option
+                );
 
-    });
+        }
+    );
 
 
     supervisorSelect.innerHTML =
         '<option value="">Todos los supervisores</option>';
 
 
-    supervisores.forEach(function(supervisor){
+    supervisores.forEach(
+        function(supervisor){
 
-        const option =
-            document.createElement("option");
+            const option =
+                document.createElement(
+                    "option"
+                );
 
-        option.value = supervisor;
+            option.value =
+                supervisor;
 
-        option.textContent = supervisor;
+            option.textContent =
+                supervisor;
 
-        supervisorSelect.appendChild(option);
+            supervisorSelect
+                .appendChild(
+                    option
+                );
 
-    });
+        }
+    );
 
 
-    molinoSelect.value = molinoActual;
+    molinoSelect.value =
+        molinoActual;
 
-    supervisorSelect.value = supervisorActual;
+    supervisorSelect.value =
+        supervisorActual;
 
 }
 
+
+/* =====================================================
+   FILTRAR
+===================================================== */
 
 function obtenerFiltrados(){
 
     const molino =
-        document.getElementById("filtroMolino")
-        .value;
-
-
-    const hallazgo =
-        document.getElementById("filtroHallazgo")
-        .value;
+        document.getElementById(
+            "filtroMolino"
+        ).value;
 
 
     const supervisor =
-        document.getElementById("filtroSupervisor")
-        .value;
+        document.getElementById(
+            "filtroSupervisor"
+        ).value;
 
 
-    return registros.filter(function(r){
+    const hallazgo =
+        document.getElementById(
+            "filtroHallazgo"
+        ).value;
 
-        return (
 
-            (!molino || r.molino === molino)
+    const fechaDesde =
+        document.getElementById(
+            "fechaDesde"
+        ).value;
 
-            &&
 
-            (!hallazgo || r.hallazgo === hallazgo)
+    const fechaHasta =
+        document.getElementById(
+            "fechaHasta"
+        ).value;
 
-            &&
 
-            (!supervisor || r.supervisor === supervisor)
+    return registros.filter(
+        function(r){
 
-        );
+            const fecha =
+                r.fecha
+                ? r.fecha.substring(
+                    0,
+                    10
+                )
+                : "";
 
-    });
+
+            return (
+
+                (!molino ||
+                    r.molino === molino)
+
+                &&
+
+                (!supervisor ||
+                    r.supervisor === supervisor)
+
+                &&
+
+                (!hallazgo ||
+                    r.hallazgo === hallazgo)
+
+                &&
+
+                (!fechaDesde ||
+                    fecha >= fechaDesde)
+
+                &&
+
+                (!fechaHasta ||
+                    fecha <= fechaHasta)
+
+            );
+
+        }
+    );
 
 }
 
 
-function mostrarTabla(datos){
+/* =====================================================
+   DASHBOARD
+===================================================== */
+
+function actualizarDashboard(){
+
+    const datos =
+        obtenerFiltrados();
+
+
+    actualizarEstadisticas(
+        datos
+    );
+
+
+    mostrarTabla(
+        datos
+    );
+
+
+    graficaMolinos(
+        datos
+    );
+
+
+    graficaPie(
+        datos
+    );
+
+
+    graficaPareto(
+        datos
+    );
+
+
+    graficaTendencia(
+        datos
+    );
+
+
+    graficaSupervisores(
+        datos
+    );
+
+
+    mostrarResumen(
+        datos
+    );
+
+}
+
+
+/* =====================================================
+   ESTADISTICAS
+===================================================== */
+
+function actualizarEstadisticas(
+    datos
+){
+
+    const total =
+        datos.length;
+
+
+    const molinos =
+        new Set(
+            datos.map(
+                r => r.molino
+            )
+        );
+
+
+    const supervisores =
+        new Set(
+            datos.map(
+                r => r.supervisor
+            )
+        );
+
+
+    document.getElementById(
+        "totalMC"
+    ).textContent =
+        total;
+
+
+    document.getElementById(
+        "mcConHallazgo"
+    ).textContent =
+        total;
+
+
+    document.getElementById(
+        "porcentajeHallazgo"
+    ).textContent =
+        total > 0
+        ? "100%"
+        : "0%";
+
+
+    document.getElementById(
+        "totalMolinos"
+    ).textContent =
+        molinos.size;
+
+
+    document.getElementById(
+        "totalSupervisores"
+    ).textContent =
+        supervisores.size;
+
+}
+
+
+/* =====================================================
+   TABLA
+===================================================== */
+
+function mostrarTabla(
+    datos
+){
 
     const tabla =
-        document.getElementById("tablaRegistros");
+        document.getElementById(
+            "tablaRegistros"
+        );
 
 
-    if(datos.length === 0){
+    if(
+        datos.length === 0
+    ){
 
         tabla.innerHTML =
-            '<tr><td colspan="8" class="empty">No hay registros para los filtros seleccionados.</td></tr>';
+
+            '<tr>' +
+
+            '<td colspan="8" class="empty">' +
+
+            'No hay registros para los filtros seleccionados.' +
+
+            '</td>' +
+
+            '</tr>';
 
         return;
 
@@ -940,184 +1745,1017 @@ function mostrarTabla(datos){
 
 
     tabla.innerHTML =
+
         datos
-        .slice()
-        .reverse()
-        .map(function(r){
+        .map(
+            function(r){
 
-            return `
+                const fecha =
+                    r.fecha
+                    ? new Date(
+                        r.fecha
+                    ).toLocaleString(
+                        "es-MX",
+                        {
+                            day:"2-digit",
+                            month:"2-digit",
+                            year:"numeric",
+                            hour:"2-digit",
+                            minute:"2-digit"
+                        }
+                    )
+                    : "";
 
-            <tr>
 
-                <td>${escapar(r.fecha)}</td>
+                return `
 
-                <td><strong>${escapar(r.packing)}</strong></td>
+                <tr>
 
-                <td>${escapar(r.spec)}</td>
+                    <td>
+                        ${escapar(fecha)}
+                    </td>
 
-                <td>${escapar(r.espesor)}</td>
+                    <td>
+                        <strong>
+                            ${escapar(r.packing)}
+                        </strong>
+                    </td>
 
-                <td>${escapar(r.ancho)}</td>
+                    <td>
+                        ${escapar(r.spec)}
+                    </td>
 
-                <td>${escapar(r.molino)}</td>
+                    <td>
+                        ${escapar(r.espesor)}
+                    </td>
 
-                <td>${escapar(r.supervisor)}</td>
+                    <td>
+                        ${escapar(r.ancho)}
+                    </td>
 
-                <td>
-                    <span class="badge">
-                        ${escapar(r.hallazgo)}
-                    </span>
-                </td>
+                    <td>
+                        ${escapar(r.molino)}
+                    </td>
 
-            </tr>
+                    <td>
+                        ${escapar(r.supervisor)}
+                    </td>
 
-            `;
+                    <td>
+                        <span class="badge">
+                            ${escapar(r.hallazgo)}
+                        </span>
+                    </td>
 
-        })
+                </tr>
+
+                `;
+
+            }
+        )
         .join("");
 
 }
 
 
-function crearGrafica(contenedorId,datos,titulo){
+/* =====================================================
+   GRAFICA DE MOLINOS
+===================================================== */
+
+function graficaMolinos(
+    datos
+){
 
     const contenedor =
-        document.getElementById(contenedorId);
+        document.getElementById(
+            "graficaMolino"
+        );
 
 
-    if(datos.length === 0){
+    const conteo = {};
+
+
+    datos.forEach(
+        function(r){
+
+            conteo[r.molino] =
+                (conteo[r.molino] || 0)
+                + 1;
+
+        }
+    );
+
+
+    const ordenado =
+        Object.entries(
+            conteo
+        )
+        .sort(
+            (a,b) => b[1] - a[1]
+        );
+
+
+    if(
+        ordenado.length === 0
+    ){
 
         contenedor.innerHTML =
-            '<div class="empty">No hay información para mostrar.</div>';
+            '<div class="empty">Sin datos.</div>';
 
         return;
 
     }
 
 
-    const conteo = {};
-
-
-    datos.forEach(function(r){
-
-        const categoria =
-            titulo === "molino"
-            ? r.molino
-            : r.hallazgo;
-
-
-        conteo[categoria] =
-            (conteo[categoria] || 0) + 1;
-
-    });
-
-
-    const ordenado =
-        Object.entries(conteo)
-        .sort((a,b) => b[1]-a[1]);
-
-
     const maximo =
-        Math.max(...ordenado.map(x => x[1]));
+        Math.max(
+            ...ordenado.map(
+                x => x[1]
+            )
+        );
 
 
     contenedor.innerHTML =
+
         ordenado
-        .map(function(item){
+        .map(
+            function(item){
 
-            const nombre = item[0];
+                const porcentaje =
+                    (
+                        item[1] /
+                        maximo
+                    ) * 100;
 
-            const cantidad = item[1];
 
-            const porcentaje =
-                (cantidad / maximo) * 100;
+                return `
 
+                <div class="chart-row">
 
-            return `
+                    <div class="chart-label">
 
-            <div class="chart-row">
+                        <span>
+                            ${escapar(item[0])}
+                        </span>
 
-                <div class="chart-label">
+                        <span>
+                            ${item[1]}
+                        </span>
 
-                    <span>${escapar(nombre)}</span>
+                    </div>
 
-                    <span>${cantidad}</span>
+                    <div class="bar-container">
+
+                        <div
+                            class="bar"
+                            style="width:${porcentaje}%"
+                        ></div>
+
+                    </div>
 
                 </div>
 
-                <div class="bar-container">
+                `;
 
-                    <div
-                        class="bar"
-                        style="width:${porcentaje}%"
-                    ></div>
-
-                </div>
-
-            </div>
-
-            `;
-
-        })
+            }
+        )
         .join("");
 
 }
 
 
-function actualizarTodo(){
+/* =====================================================
+   GRAFICA PIE
+===================================================== */
 
-    const datos =
-        obtenerFiltrados();
+function graficaPie(
+    datos
+){
+
+    const contenedor =
+        document.getElementById(
+            "graficaPie"
+        );
 
 
-    actualizarEstadisticas(datos);
+    const conteo = {};
 
-    actualizarFiltros();
 
-    mostrarTabla(datos);
+    datos.forEach(
+        function(r){
 
-    crearGrafica(
-        "graficaMolino",
-        datos,
-        "molino"
+            conteo[r.hallazgo] =
+                (conteo[r.hallazgo] || 0)
+                + 1;
+
+        }
     );
 
-    crearGrafica(
-        "graficaHallazgo",
-        datos,
-        "hallazgo"
+
+    const items =
+        Object.entries(
+            conteo
+        );
+
+
+    if(
+        items.length === 0
+    ){
+
+        contenedor.innerHTML =
+            '<div class="empty">Sin datos.</div>';
+
+        return;
+
+    }
+
+
+    const total =
+        datos.length;
+
+
+    const colores = [
+
+        "#0f2742",
+        "#506d89",
+        "#7f9db8",
+        "#aebdca",
+        "#c9d2d9",
+        "#687784"
+
+    ];
+
+
+    let acumulado = 0;
+
+
+    const segmentos =
+        items.map(
+            function(item,index){
+
+                const porcentaje =
+                    (
+                        item[1] /
+                        total
+                    ) * 100;
+
+
+                const inicio =
+                    acumulado;
+
+
+                acumulado +=
+                    porcentaje;
+
+
+                return
+                    `${colores[index % colores.length]} ${inicio}% ${acumulado}%`;
+
+            }
+        );
+
+
+    const gradient =
+        segmentos.join(",");
+
+
+    let leyenda = "";
+
+
+    items.forEach(
+        function(item,index){
+
+            const porcentaje =
+                (
+                    item[1] /
+                    total
+                ) * 100;
+
+
+            leyenda += `
+
+            <div class="legend-item">
+
+                <span
+                    class="legend-color"
+                    style="background:${colores[index % colores.length]}"
+                ></span>
+
+                <span>
+                    ${escapar(item[0])}
+                    ·
+                    ${item[1]}
+                    (${porcentaje.toFixed(1)}%)
+                </span>
+
+            </div>
+
+            `;
+
+        }
     );
+
+
+    contenedor.innerHTML = `
+
+        <div class="pie-container">
+
+            <div
+                class="pie"
+                style="
+                    background:
+                    conic-gradient(${gradient});
+                "
+            ></div>
+
+            <div class="legend">
+
+                ${leyenda}
+
+            </div>
+
+        </div>
+
+    `;
 
 }
 
 
-document
-.getElementById("filtroMolino")
-.addEventListener(
-    "change",
-    actualizarTodo
+/* =====================================================
+   PARETO
+===================================================== */
+
+function graficaPareto(
+    datos
+){
+
+    const contenedor =
+        document.getElementById(
+            "graficaPareto"
+        );
+
+
+    const conteo = {};
+
+
+    datos.forEach(
+        function(r){
+
+            conteo[r.hallazgo] =
+                (conteo[r.hallazgo] || 0)
+                + 1;
+
+        }
+    );
+
+
+    const ordenado =
+        Object.entries(
+            conteo
+        )
+        .sort(
+            (a,b) => b[1] - a[1]
+        );
+
+
+    if(
+        ordenado.length === 0
+    ){
+
+        contenedor.innerHTML =
+            '<div class="empty">Sin datos.</div>';
+
+        return;
+
+    }
+
+
+    const total =
+        datos.length;
+
+
+    let acumulado =
+        0;
+
+
+    contenedor.innerHTML =
+
+        ordenado
+        .map(
+            function(item){
+
+                const porcentaje =
+                    (
+                        item[1] /
+                        total
+                    ) * 100;
+
+
+                acumulado +=
+                    porcentaje;
+
+
+                return `
+
+                <div class="pareto-item">
+
+                    <div class="pareto-label">
+
+                        <span>
+                            ${escapar(item[0])}
+                        </span>
+
+                        <span>
+                            ${item[1]}
+                        </span>
+
+                    </div>
+
+                    <div class="pareto-bar-container">
+
+                        <div
+                            class="pareto-bar"
+                            style="width:${porcentaje}%"
+                        ></div>
+
+                    </div>
+
+                    <div class="pareto-percent">
+
+                        ${porcentaje.toFixed(1)}%
+                        · acumulado ${acumulado.toFixed(1)}%
+
+                    </div>
+
+                </div>
+
+                `;
+
+            }
+        )
+        .join("");
+
+}
+
+
+/* =====================================================
+   TENDENCIA
+===================================================== */
+
+function graficaTendencia(
+    datos
+){
+
+    const contenedor =
+        document.getElementById(
+            "graficaLinea"
+        );
+
+
+    const meses = {};
+
+
+    datos.forEach(
+        function(r){
+
+            if(!r.fecha){
+                return;
+            }
+
+
+            const fecha =
+                new Date(
+                    r.fecha
+                );
+
+
+            const clave =
+                fecha.getFullYear() +
+                "-" +
+                String(
+                    fecha.getMonth()+1
+                )
+                .padStart(
+                    2,
+                    "0"
+                );
+
+
+            meses[clave] =
+                (meses[clave] || 0)
+                + 1;
+
+        }
+    );
+
+
+    const datosMes =
+        Object.entries(
+            meses
+        )
+        .sort(
+            (a,b) =>
+                a[0].localeCompare(
+                    b[0]
+                )
+        );
+
+
+    if(
+        datosMes.length === 0
+    ){
+
+        contenedor.innerHTML =
+            '<div class="empty">Sin datos.</div>';
+
+        return;
+
+    }
+
+
+    const maximo =
+        Math.max(
+            ...datosMes.map(
+                x => x[1]
+            )
+        );
+
+
+    const ancho = 700;
+
+    const alto = 230;
+
+    const margen = 35;
+
+
+    const puntos =
+        datosMes.map(
+            function(item,index){
+
+                const x =
+                    datosMes.length === 1
+                    ? ancho / 2
+                    : margen +
+                    (
+                        index /
+                        (
+                            datosMes.length-1
+                        )
+                    ) *
+                    (
+                        ancho -
+                        margen*2
+                    );
+
+
+                const y =
+                    alto -
+                    margen -
+                    (
+                        item[1] /
+                        maximo
+                    ) *
+                    (
+                        alto -
+                        margen*2
+                    );
+
+
+                return {
+                    x:x,
+                    y:y,
+                    valor:item[1],
+                    mes:item[0]
+                };
+
+            }
+        );
+
+
+    const polyline =
+        puntos
+        .map(
+            p =>
+                `${p.x},${p.y}`
+        )
+        .join(" ");
+
+
+    let puntosSVG = "";
+
+    let etiquetas = "";
+
+
+    puntos.forEach(
+        function(p){
+
+            puntosSVG += `
+
+                <circle
+                    cx="${p.x}"
+                    cy="${p.y}"
+                    r="5"
+                    fill="#0f2742"
+                />
+
+            `;
+
+
+            etiquetas += `
+
+                <text
+                    x="${p.x}"
+                    y="${p.y - 10}"
+                    text-anchor="middle"
+                    font-size="12"
+                    fill="#1f2937"
+                >
+                    ${p.valor}
+                </text>
+
+                <text
+                    x="${p.x}"
+                    y="${alto - 8}"
+                    text-anchor="middle"
+                    font-size="11"
+                    fill="#667085"
+                >
+                    ${p.mes}
+                </text>
+
+            `;
+
+        }
+    );
+
+
+    contenedor.innerHTML = `
+
+        <svg
+            viewBox="0 0 ${ancho} ${alto}"
+            preserveAspectRatio="none"
+        >
+
+            <line
+                x1="${margen}"
+                y1="${alto-margen}"
+                x2="${ancho-margen}"
+                y2="${alto-margen}"
+                stroke="#ccd3da"
+            />
+
+            <polyline
+                points="${polyline}"
+                fill="none"
+                stroke="#0f2742"
+                stroke-width="3"
+            />
+
+            ${puntosSVG}
+
+            ${etiquetas}
+
+        </svg>
+
+    `;
+
+}
+
+
+/* =====================================================
+   SUPERVISORES
+===================================================== */
+
+function graficaSupervisores(
+    datos
+){
+
+    const contenedor =
+        document.getElementById(
+            "graficaSupervisor"
+        );
+
+
+    const conteo = {};
+
+
+    datos.forEach(
+        function(r){
+
+            conteo[r.supervisor] =
+                (
+                    conteo[r.supervisor]
+                    || 0
+                )
+                + 1;
+
+        }
+    );
+
+
+    const ordenado =
+        Object.entries(
+            conteo
+        )
+        .sort(
+            (a,b) => b[1]-a[1]
+        );
+
+
+    if(
+        ordenado.length === 0
+    ){
+
+        contenedor.innerHTML =
+            '<div class="empty">Sin datos.</div>';
+
+        return;
+
+    }
+
+
+    const maximo =
+        Math.max(
+            ...ordenado.map(
+                x => x[1]
+            )
+        );
+
+
+    contenedor.innerHTML =
+
+        ordenado
+        .map(
+            function(item){
+
+                const porcentaje =
+                    (
+                        item[1] /
+                        maximo
+                    ) * 100;
+
+
+                return `
+
+                <div class="chart-row">
+
+                    <div class="chart-label">
+
+                        <span>
+                            ${escapar(item[0])}
+                        </span>
+
+                        <span>
+                            ${item[1]}
+                        </span>
+
+                    </div>
+
+                    <div class="bar-container">
+
+                        <div
+                            class="bar"
+                            style="width:${porcentaje}%"
+                        ></div>
+
+                    </div>
+
+                </div>
+
+                `;
+
+            }
+        )
+        .join("");
+
+}
+
+
+/* =====================================================
+   RESUMEN
+===================================================== */
+
+function mostrarResumen(
+    datos
+){
+
+    const contenedor =
+        document.getElementById(
+            "resumenFiltros"
+        );
+
+
+    const molino =
+        document.getElementById(
+            "filtroMolino"
+        ).value;
+
+
+    const supervisor =
+        document.getElementById(
+            "filtroSupervisor"
+        ).value;
+
+
+    const hallazgo =
+        document.getElementById(
+            "filtroHallazgo"
+        ).value;
+
+
+    const desde =
+        document.getElementById(
+            "fechaDesde"
+        ).value;
+
+
+    const hasta =
+        document.getElementById(
+            "fechaHasta"
+        ).value;
+
+
+    contenedor.innerHTML = `
+
+        <div style="display:grid;gap:10px">
+
+            <div>
+                <strong>Registros:</strong>
+                ${datos.length}
+            </div>
+
+            <div>
+                <strong>Molino:</strong>
+                ${escapar(molino || "Todos")}
+            </div>
+
+            <div>
+                <strong>Supervisor:</strong>
+                ${escapar(supervisor || "Todos")}
+            </div>
+
+            <div>
+                <strong>Hallazgo:</strong>
+                ${escapar(hallazgo || "Todos")}
+            </div>
+
+            <div>
+                <strong>Desde:</strong>
+                ${escapar(desde || "Sin límite")}
+            </div>
+
+            <div>
+                <strong>Hasta:</strong>
+                ${escapar(hasta || "Sin límite")}
+            </div>
+
+        </div>
+
+    `;
+
+}
+
+
+/* =====================================================
+   EVENTOS FILTROS
+===================================================== */
+
+[
+    "fechaDesde",
+    "fechaHasta",
+    "filtroMolino",
+    "filtroSupervisor",
+    "filtroHallazgo"
+]
+.forEach(
+    function(id){
+
+        document
+        .getElementById(id)
+        .addEventListener(
+            "change",
+            actualizarDashboard
+        );
+
+    }
 );
 
 
+/* =====================================================
+   LIMPIAR FILTROS
+===================================================== */
+
 document
-.getElementById("filtroHallazgo")
+.getElementById(
+    "limpiarFiltros"
+)
 .addEventListener(
-    "change",
-    actualizarTodo
+    "click",
+    function(){
+
+        document.getElementById(
+            "fechaDesde"
+        ).value = "";
+
+
+        document.getElementById(
+            "fechaHasta"
+        ).value = "";
+
+
+        document.getElementById(
+            "filtroMolino"
+        ).value = "";
+
+
+        document.getElementById(
+            "filtroSupervisor"
+        ).value = "";
+
+
+        document.getElementById(
+            "filtroHallazgo"
+        ).value = "";
+
+
+        actualizarDashboard();
+
+    }
 );
 
 
+/* =====================================================
+   ACTUALIZAR DATOS
+===================================================== */
+
 document
-.getElementById("filtroSupervisor")
+.getElementById(
+    "actualizarDatos"
+)
 .addEventListener(
-    "change",
-    actualizarTodo
+    "click",
+    cargarDatos
 );
 
 
-actualizarFecha();
+/* =====================================================
+   REALTIME
+===================================================== */
 
-actualizarTodo();
+function activarRealtime(){
+
+    if(canalRealtime){
+
+        supabaseClient
+        .removeChannel(
+            canalRealtime
+        );
+
+    }
+
+
+    canalRealtime =
+        supabaseClient
+
+        .channel(
+            "hallazgos-mc-cambios"
+        )
+
+        .on(
+            "postgres_changes",
+            {
+                event:"*",
+                schema:"public",
+                table:"hallazgos_mc"
+            },
+            function(){
+
+                cargarDatos();
+
+            }
+        )
+
+        .subscribe(
+            function(status){
+
+                console.log(
+                    "Realtime:",
+                    status
+                );
+
+            }
+        );
+
+}
+
+
+/* =====================================================
+   INICIO
+===================================================== */
+
+activarRealtime();
+
+cargarDatos();
 
 </script>
 
